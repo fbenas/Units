@@ -71,8 +71,7 @@ public class TestUnit
 		{
 			if(unit.getName() == "B")
 			{
-				unit.setX(100);
-				unit.setY(100);
+				unit.setPos(100,100);
 				break;
 			}
 		}
@@ -109,8 +108,7 @@ public class TestUnit
 		Home homeA = new Home("A",debug);
 		Home homeB = new Home(20,20,"B",debug);
 		Home homeC = new Home(0,0,"C",debug);
-		homeC.setX(10);
-		homeC.setY(10);
+		homeC.setPos(10,10);
 		debug("Completed", "Test Four");
 	}
 
@@ -134,7 +132,10 @@ public class TestUnit
 		// returns new amount if successful otherwise returns 0.
 		resourceB.reduceAmount(10);
 		resourceA.reduceAmount(10);
-
+		
+		Home homeE = new Home("E", debug);
+		homeE.setAmount(10);
+		homeE.increaseAmount(10);
 		debug("Completed", "Test Six");
 	}
 	

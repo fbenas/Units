@@ -21,9 +21,30 @@ public class Home extends Thing
 		super(nameValue, debugValue);
 
 		// We must locate the thing.
-		super.setX(xValue);
-		super.setY(yValue);
+		super.setPos(xValue, yValue);
 	}
 
 	// END Constructors
+
+	/*
+	 * Methods and variables for storing resource
+	*/
+	
+	private int amount = 0;
+	
+	public int getAmount()
+	{
+		return amount;
+	}
+	public void setAmount(int amountValue)
+	{
+		super.debug("Setting amount to " + amountValue);
+		amount = amountValue;
+	}
+	public void increaseAmount(int increaseAmount)
+	{
+		int newAmount = amount+increaseAmount;
+		super.debug("Increasing amount, " + amount + " by " + increaseAmount + " to " + newAmount);
+		amount = newAmount;
+	}
 }

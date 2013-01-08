@@ -1,6 +1,9 @@
 /*
  * A public class that acts as a base class for all things on the ground.
  */
+
+import java.awt.Point;
+
 public class Thing
 {
 	// Application wide vars
@@ -22,6 +25,7 @@ public class Thing
 		debug = debugValue;
 		if(nameValue != null && nameValue != "")
 			name = nameValue;
+		pos = new Point();	
 	}
 
 	// END Constructors
@@ -31,34 +35,32 @@ public class Thing
 	 * set and get x and y coordinates
 	*/
 
-	private int x;
-	private int y;	 // x and y is the positon of the thing on the ground.
+	private Point pos; // x and y is the positon of the thing on the ground.
 
 	// Choose a starting position for the new thing.
 	public void locate()
 	{
 		// Default is random, override this to change location behaviour
-		setX(getRandomGroundPos()); 
-		setY(getRandomGroundPos());
+		setPos(getRandomGroundPos(),getRandomGroundPos());
 	}
 
-	public void setX( int value )
-	{
-		x = value;
-		debug("setting x to " + value);
-	}
 	public int getX()
 	{
-		return x;
+		return (int) pos.getX();
 	}
-	public void setY( int value )
-	{
-		y = value;
-		debug("setting y to " + value);
-	}
+
 	public int getY()
 	{
-		return y;
+		return (int) pos.getY();
+	}
+	public Point getPos()
+	{
+		return pos;
+	}
+	public void setPos( int xValue, int yValue )
+	{
+		pos.setLocation(xValue, yValue);
+		debug("setting new position to " + xValue + "," + yValue);
 	}
 
 	// END location methods
@@ -96,6 +98,6 @@ public class Thing
 	// Method for adding debug information from a Thing
 	protected void debug(String value)
 	{
-		debug.debug(name, value, debugLevel);
+		debug.debug(this.getClass().getName() + "-" + name, value, debugLevel);
 	}
 }

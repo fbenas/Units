@@ -2,8 +2,12 @@
  * A public class that extends from the Thing base class.
  * It implements the Move class, hence it can move on the ground.
  */
+
+import java.awt.Point;
+
 public class Unit extends Thing implements Move
 {
+
 	// Application wide vars
 	// THESE SHOULD MOVE TO A STATIC CLASS.
 	private int groundX = 50;
@@ -37,8 +41,7 @@ public class Unit extends Thing implements Move
 		//Unit specific, we must set the home.
 		setHome(homeValue);
 		carry = 0;
-		super.setX(xValue);
-		super.setY(yValue);
+		super.setPos(xValue, yValue);
 	}
 
 	// END Constructors
@@ -51,29 +54,23 @@ public class Unit extends Thing implements Move
 	// This will have to take parameters for checking surroundings
 	
 	@Override
-	public boolean move()
+	public Boolean move()
 	{
 		super.debug("moving...");
 		// future: have states, and a case statement to decide what type of movemet to do
 		// random movment, follow breadcrums, head home... etc
-		setX(super.getRandomMove(super.getX())+super.getX());
-		setY(super.getRandomMove(super.getY())+super.getY());
+		int xValue = super.getRandomMove(super.getX())+super.getX();
+		int yValue = super.getRandomMove(super.getY())+super.getY();
+		setPos(xValue,yValue);
 		debug("move made.");
 		return true;
 	}
 
 	// Method to make a single move towards the Unit's home.
 	// This will probably need to be private.
-	public void returnHome()
+	public void moveHome()
 	{
 		// Find a clever way to move towards home
-	}
-
-	// Method to make a single random move.
-	// This will probably need to be private.
-	public void moveRandom()
-	{
-		// Make a single random move
 	}
 
 	// END of movement methods and variables
@@ -81,6 +78,23 @@ public class Unit extends Thing implements Move
 	/*
 	 * Interaction methods and variables
 	 */
+
+	public boolean canInteract(int xValue, int yValue)
+	{
+		if(Math.abs(xValue-super.getX()) < 1 && Math.abs(yValue-super.getY()) < 1)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	public boolean canInteract(Point pValue)
+	{
+		return canInteract((int)pValue.getX(), (int)pValue.getY());
+	}
 
 	private int carry;
 	// Method to interact with a resource, and take some.
@@ -101,7 +115,7 @@ public class Unit extends Thing implements Move
 			carry = 0;
 			return carry;
 		}
-			else
+		else
 		{
 			debug("cannot carry amount, " + carryValue + ". Unit already has " + carry);
 			return carryValue;
@@ -119,41 +133,35 @@ public class Unit extends Thing implements Move
 	public void locate()
 	{
 		Double rand = Math.random();
-		int pos = (int)Math.rint(rand*7); // 7 gives us 8 posibilites (0-7)
-		
-		switch(pos)
+		int newPos = (int)Math.rint(rand*7); // 7 gives us 8 posibilites (0-7)
+		int xValue = home.getX();
+		int yValue = home.getY();
+
+		switch(newPos)
 		{
 			case 0:
-				super.setX(home.getX()-1);
-				super.setY(home.getY()-1);
+				super.setPos(xValue-1, yValue-1);
 				break;
 			case 1:
-				super.setX(home.getX());
-				super.setY(home.getY()-1);
+				super.setPos(xValue, yValue-1);
 				break;
 			case 2:
-				super.setX(home.getX()+1);
-				super.setY(home.getY()-1);
+				super.setPos(xValue+1, yValue-1);
 				break;
 			case 3:
-				super.setX(home.getX()-1);
-				super.setY(home.getY());
+				super.setPos(xValue-1, yValue);
 				break;
 			case 4:
-				super.setX(home.getX()+1);
-				super.setY(home.getY());
+				super.setPos(xValue+1, yValue);
 				break;
 			case 5:
-				super.setX(home.getX()-1);
-				super.setY(home.getY()+1);
+				super.setPos(xValue-1, yValue+1);
 				break;
 			case 6:
-				super.setX(home.getX());
-				super.setY(home.getY()+1);
+				super.setPos(xValue, yValue+1);
 				break;
 			case 7:
-				super.setX(home.getX()+1);
-				super.setY(home.getY()+1);
+				super.setPos(xValue+1, yValue+1);
 				break;				
 			default:
 				break;
@@ -171,8 +179,7 @@ public class Unit extends Thing implements Move
 	}
 	public void setHome(Home homeValue)
 	{
-		super.debug("setting home to: " + homeValue.getName() + " at location " + homeValue.getX() +  "," + homeValue.getY());
+		super.debug("setting home to " + homeValue.getName() + " at location " + homeValue.getX() +  "," + homeValue.getY());
 		home = homeValue;
 	}
-
 }

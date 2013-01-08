@@ -9,7 +9,7 @@ public interface Move
 	*/
 
 	// Move method gets to decide how to move, then make the required movements
-	public abstract boolean move();
+	public abstract Boolean move();
 
 	// END movement methods and variables
 	
