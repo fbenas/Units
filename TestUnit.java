@@ -1,5 +1,7 @@
-
-class TestUnit
+/*
+ * Test applciation to check everything is hunky dory
+ */
+public class TestUnit
 {
 	// Application wide vars
 	// THESE SHOULD MOVE TO A STATIC CLASS.
@@ -12,12 +14,36 @@ class TestUnit
 	public TestUnit(int runtimeLevelValue)
 	{
 		debug = new Debug(runtimeLevelValue);
+
 		// Test set and get X,Y and Name.
 		testOne();
 		// Test some simple movement.
 		testTwo();
 		// Test Multiple moves in a loop
-		testThree();
+		testThree(); 
+		// Test The Home class
+		testFour();
+		// Test creation of unit from a home.
+		testFive();
+		// Test creation of a resource.
+		testSix();
+		// Test Unit carrying and unloading
+		testSeven();
+		// Spoof surroundings so we can test its decsion making
+		testEight();
+		// Test Unit interacting with ground boundaries
+		testNine();
+		// Test Unit interacting with a resource
+		testTen();
+		//Test Unit interacting with home
+		testEleven();
+		// Test Unit moving randomly then interacting with a resource
+		testTwelve();
+		// Test Unit returning home
+		testThirteen();
+		// Test Unit moving randomly, interacting with a resource and then
+		// returning home
+		testFourteen();
 	}
 	// Class to test the Unit class.
 	public static void main(String[] args)
@@ -34,9 +60,10 @@ class TestUnit
 	private void testOne()
 	{
 		debug("Starting...", "Test One");
-		Unit unitA = new Unit("A",debug);
-		Unit unitB = new Unit(0,0,"B",debug);
-		Unit unitC = new Unit(10,5,"C",debug);
+		Home home = new Home("HOME",debug);
+		Unit unitA = new Unit("A",home,debug);
+		Unit unitB = new Unit(0,0,"B",home,debug);
+		Unit unitC = new Unit(10,5,"C",home,debug);
 
 		Unit[] bla = {unitA, unitB, unitC};
 
@@ -55,7 +82,8 @@ class TestUnit
 	private void testTwo()
 	{
 		debug("Starting...", "Test Two");
-		Unit unitD = new Unit(20,20,"D",debug);
+		Home home = new Home("HOME",debug);
+		Unit unitD = new Unit(20,20,"D",home, debug);
 		unitD.move();
 		debug("Completed", "Test Two");	
 	}
@@ -63,9 +91,10 @@ class TestUnit
 	private void testThree()
 	{
 		debug("Starting...", "Test Three");
-		Unit unitE = new Unit("E",debug);
+		Home home = new Home("HOME",debug);
+		Unit unitE = new Unit("E",home, debug);
 		int counter = 0;
-		while (counter < 100)
+		while (counter < 5)
 		{
 			unitE.move();
 			counter++;
@@ -74,6 +103,101 @@ class TestUnit
 		debug("Completed", "Test Three");	
 	}
 
+	public void testFour()
+	{
+		debug("Starting...", "Test Four");
+		Home homeA = new Home("A",debug);
+		Home homeB = new Home(20,20,"B",debug);
+		Home homeC = new Home(0,0,"C",debug);
+		homeC.setX(10);
+		homeC.setY(10);
+		debug("Completed", "Test Four");
+	}
+
+	public void testFive()
+	{
+		debug("Starting...", "Test Five");
+		Home homeD = new Home("D",debug);
+		Unit unitF = new Unit("F",homeD,debug);
+		debug("Completed", "Test Five");
+	}
+
+	public void testSix()
+	{
+		debug("Starting...", "Test Six");
+		Resource resourceA = new Resource("A",100,debug);
+		Resource resourceB = new Resource(20,20,"B",100,debug);
+		resourceA.setName("New Name");
+		resourceA.setAmount(5);
+
+		// Usually we need to check if this has worked.
+		// returns new amount if successful otherwise returns 0.
+		resourceB.reduceAmount(10);
+		resourceA.reduceAmount(10);
+
+		debug("Completed", "Test Six");
+	}
+	
+	public void testSeven()
+	{
+		debug("Starting...", "Test Seven");
+		Home home = new Home("Home",debug);
+		Unit unitG = new Unit("G", home, debug);
+		unitG.setCarry(10);
+		unitG.setCarry(10);
+		unitG.setCarry(0);
+		unitG.setCarry(10);
+		debug("Completed", "Test Seven");
+	}
+
+	public void testEight()
+	{
+		debug("Starting...", "Test Eight");
+
+		debug("Completed", "Test Eight");
+	}
+
+	public void testNine()
+	{
+		debug("Starting...", "Test Nine");
+
+		debug("Completed", "Test Nine");
+	}
+
+	public void testTen()
+	{
+		debug("Starting...", "Test Ten");
+
+		debug("Completed", "Test Ten");
+	}
+
+	public void testEleven()
+	{
+		debug("Starting...", "Test Eleven");
+
+		debug("Completed", "Test Eleven");
+	}
+
+	public void testTwelve()
+	{
+		debug("Starting...", "Test Tweleve");
+
+		debug("Completed", "Test Tweleve");
+	}
+
+	public void testThirteen()
+	{
+		debug("Starting...", "Test Thirteen");
+
+		debug("Completed", "Test Thirteen");
+	}
+
+	public void testFourteen()
+	{
+		debug("Starting...", "Test Fourteen");
+
+		debug("Completed", "Test Fourteen");
+	}
 	public void debug(String value, String test)
 	{
 		debug.debug(test, value, debugLevel);

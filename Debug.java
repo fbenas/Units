@@ -1,5 +1,12 @@
-class Debug
+/*
+ * Public class to print debug information in a meaningfull way to the console.
+ */
+public class Debug
 {
+	// debug levels:
+	// 1 = application (top level)
+	// 2 = Things
+	// 
 	public Debug(int levelValue)
 	{
 		level = levelValue;
