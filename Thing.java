@@ -62,7 +62,11 @@ public class Thing
 		pos.setLocation(xValue, yValue);
 		debug("setting new position to " + xValue + "," + yValue);
 	}
-
+	public void setPos( Point p )
+	{
+		pos = p;
+		debug("setting new position to " + p.getX() + "," + p.getY());
+	}
 	// END location methods
 
 	// name variable and methods

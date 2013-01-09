@@ -3,11 +3,12 @@
  * It implements the Move class, hence it can move on the ground.
  */
 
+// Imports
+import java.util.ArrayList;
 import java.awt.Point;
 
 public class Unit extends Thing implements Move
 {
-
 	// Application wide vars
 	// THESE SHOULD MOVE TO A STATIC CLASS.
 	private int groundX = 50;
@@ -31,6 +32,7 @@ public class Unit extends Thing implements Move
 		//We must locate every child class of Thing at the end of the constructor.
 		moves = movesValue;
 		locate();
+		logLocation();
 	}
 
 	// Constructor with x and y values to create a Unit with a specfic location
@@ -41,7 +43,8 @@ public class Unit extends Thing implements Move
 		//Unit specific, we must set the home.
 		setHome(homeValue);
 		carry = 0;
-		super.setPos(xValue, yValue);
+		setPos(xValue, yValue);
+		logLocation();
 	}
 
 	// END Constructors
@@ -64,6 +67,7 @@ public class Unit extends Thing implements Move
 		moves = movesValue;
 		Point p = super.translateMove(getValidRandomMove());
 		setPos(getX()+(int)p.getX(),getY()+(int)p.getY());
+		logLocation();
 		debug("move made.");
 		return true;
 	}
@@ -105,7 +109,19 @@ public class Unit extends Thing implements Move
 	// This will probably need to be private.
 	public void moveHome()
 	{
-		// Find a clever way to move towards home
+		// get last move made from history
+		int movePointer = history.size()-1;
+		if(movePointer >= 0)
+		{
+			setPos(history.get(movePointer));
+			history.remove(movePointer);
+			history.trimToSize();
+		}
+		else
+		{
+			debug("Reached last move in History.");
+			System.exit(1);
+		}
 	}
 
 	// END of movement methods and variables
@@ -116,7 +132,7 @@ public class Unit extends Thing implements Move
 
 	public boolean canInteract(int xValue, int yValue)
 	{
-		if(Math.abs(xValue-super.getX()) < 1 && Math.abs(yValue-super.getY()) < 1)
+		if(Math.abs(xValue-super.getX()) < 2 && Math.abs(yValue-super.getY()) < 2)
 		{
 			return true;
 		}
@@ -176,8 +192,29 @@ public class Unit extends Thing implements Move
 	{
 		int newPos = getValidRandomMove();
 		Point p = super.translateMove(newPos);
-		super.setPos((int)p.getX()+home.getX(), (int)p.getY()+home.getY());
+		setPos((int)p.getX()+home.getX(), (int)p.getY()+home.getY());
 	}
+	
+	private ArrayList<Point> history = new ArrayList<Point>();	
+
+	public ArrayList<Point> getHistory()
+	{
+		return history;
+	}
+
+	private void logLocation()
+	{
+		history.add(new Point(getPos()));
+	}
+
+	public void outputHistory()
+	{
+		for(int i = 0; i < history.size(); i++)
+		{
+			System.out.println(history.get(i).getX() + "," + history.get(i).getY());
+		}
+	}	
+		
 
 	// END Helper methods
 

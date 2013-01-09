@@ -1,6 +1,10 @@
 /*
  * Main applciation for Units
  */
+
+// Imports
+import java.awt.Point;
+
 public class UnitsApp
 {
 	// Application wide vars
@@ -11,7 +15,7 @@ public class UnitsApp
 	private int debugLevel = 1;
 	private int carryAmount = 10;
 	private int resourceAmount = 100;
-	private int gameTime = 1000;
+	private int gameTime = 200;
 	private GridSquareStatus[] MOVES = new GridSquareStatus[]{
 						GridSquareStatus.EMPTY, 
 						GridSquareStatus.EMPTY,
@@ -49,7 +53,7 @@ public class UnitsApp
 	private void go()
 	{
 		debug("Deployment", "Creating a Home");	
-		Home home = new Home("H", debugger);
+		Home home = new Home(0,0,"H", debugger);
 		debug("Deployment", "Home, " + home.getName() + " created at " + home.getX() + "," + home.getY());	
 
 		debug("Deployment", "Creating a Unit");	
@@ -57,8 +61,8 @@ public class UnitsApp
 		debug("Deployment", "Unit, " + unit.getName() + " created at " + unit.getX() + "," + unit.getY());
 
 		debug("Deployment", "Creating a Resource");	
-		Resource resource = new Resource("R",resourceAmount,debugger);
-		debug("Deployment", "Home, " + resource.getName() + " created at " + resource.getX() + "," + resource.getY());
+		Resource resource = new Resource(3,3,"R",resourceAmount,debugger);
+		debug("Deployment", "Resource, " + resource.getName() + " created at " + resource.getX() + "," + resource.getY());
 
 		int i = 0;
 		while( i < gameTime )
@@ -69,9 +73,8 @@ public class UnitsApp
 			if( unit.getCarry() == 0 )
 			{
 				debug("Main Loop", "Unit, " + unit.getName()  + ", is carrying nothing");
-				if( unit.canInteract(resource.getPos()))
+				if( unit.canInteract(new Point(resource.getPos())) )
 				{
-					System.out.println("FUCK YEA");
 					debug("Main Loop", "Unit, " + unit.getName()  + ", is in proximty of a resource");
 					if(resource.getAmount() > 0)
 					{
@@ -92,14 +95,14 @@ public class UnitsApp
 				debug("Main Loop", "Unit, " + unit.getName()  + ", is carrying a load");
 				if ( unit.canInteract(unit.getHome().getPos()) )
 				{
-					System.out.println("SHIT YEA");
 					debug("Main Loop", "Unit, " + unit.getName()  + ", is in proximty of its home");
 					unit.getHome().increaseAmount(unit.getCarry());
 					unit.setCarry(0);
+					debug("Main Loop", "Unit" + unit.getName() + ", has dropped it's load at home.");
 				}
 				else
 				{
-					debug("Main Loop", "Unit, " + unit.getName()  + ", will move toward home");
+					debug("Main Loop", "Unit, " + unit.getName()  + ", will move toward home. " + unit.getHistory().size() + " moves left" );
 					unit.moveHome();
 				}
 			}
