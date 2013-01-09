@@ -83,7 +83,7 @@ public class TestUnit
 		debug("Starting...", "Test Two");
 		Home home = new Home("HOME",debug);
 		Unit unitD = new Unit(20,20,"D",home, debug);
-		unitD.move();
+		unitD.move(new int[]{0});
 		debug("Completed", "Test Two");	
 	}
 
@@ -95,7 +95,7 @@ public class TestUnit
 		int counter = 0;
 		while (counter < 5)
 		{
-			unitE.move();
+			unitE.move(new int[]{0});
 			counter++;
 			debug("Move" + counter, "Test Three");
 		}

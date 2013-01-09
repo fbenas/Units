@@ -25,7 +25,7 @@ public class Thing
 		debug = debugValue;
 		if(nameValue != null && nameValue != "")
 			name = nameValue;
-		pos = new Point();	
+		pos = new Point();
 	}
 
 	// END Constructors
@@ -83,11 +83,38 @@ public class Thing
 	 * Perhaps place these in another helper class, if there's lots.
 	*/
 
-	protected int getRandomMove(int valueA)
+	// Translates a Thing's local move to a valid board move.
+	protected Point translateMove(int value)
 	{
-		Double rand = 1 - (Math.random() * 2);
+		switch(value)
+		{
+			case 0:
+				return new Point(-1,-1);
+			case 1:
+				return new Point(0,-1);
+			case 2:
+				return new Point(1,-1);
+			case 3:
+				return new Point(-1,0);
+			case 4:
+				return new Point(1,0);
+			case 5:
+				return new Point(-1,1);
+			case 6:
+				return new Point(0,1);
+			case 7:
+				return new Point(1,1);			
+			default:
+				return null;
+		}
+	}
+
+	protected int getRandomMove()
+	{
+		Double rand = Math.random() * 7;
 		return (int)Math.rint(rand);
 	}
+
 	// This method gets a valid x,y coordinate
 	protected int getRandomGroundPos()
 	{

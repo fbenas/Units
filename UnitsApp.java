@@ -11,7 +11,17 @@ public class UnitsApp
 	private int debugLevel = 1;
 	private int carryAmount = 10;
 	private int resourceAmount = 100;
-	private int gameTime = 10000;
+	private int gameTime = 1000;
+	private GridSquareStatus[] MOVES = new GridSquareStatus[]{
+						GridSquareStatus.EMPTY, 
+						GridSquareStatus.EMPTY,
+						GridSquareStatus.EMPTY,
+						GridSquareStatus.EMPTY,
+						GridSquareStatus.EMPTY,
+						GridSquareStatus.EMPTY,
+						GridSquareStatus.EMPTY,
+						GridSquareStatus.EMPTY
+					};
 
 	// This must be set up, either true or false.
 	private Debug debugger;
@@ -43,7 +53,7 @@ public class UnitsApp
 		debug("Deployment", "Home, " + home.getName() + " created at " + home.getX() + "," + home.getY());	
 
 		debug("Deployment", "Creating a Unit");	
-		Unit unit = new Unit("U",home, debugger);
+		Unit unit = new Unit("U",home, MOVES, debugger);
 		debug("Deployment", "Unit, " + unit.getName() + " created at " + unit.getX() + "," + unit.getY());
 
 		debug("Deployment", "Creating a Resource");	
@@ -59,7 +69,7 @@ public class UnitsApp
 			if( unit.getCarry() == 0 )
 			{
 				debug("Main Loop", "Unit, " + unit.getName()  + ", is carrying nothing");
-				if( unit.canInteract(resource.getPos()) )
+				if( unit.canInteract(resource.getPos()))
 				{
 					System.out.println("FUCK YEA");
 					debug("Main Loop", "Unit, " + unit.getName()  + ", is in proximty of a resource");
@@ -74,7 +84,7 @@ public class UnitsApp
 				{
 					// Move Randomly
 					debug("Main Loop", "Unit, " + unit.getName()  + ", will make a random move");
-					unit.move();
+					unit.move(MOVES);
 				}
 			}
 			else
@@ -82,6 +92,7 @@ public class UnitsApp
 				debug("Main Loop", "Unit, " + unit.getName()  + ", is carrying a load");
 				if ( unit.canInteract(unit.getHome().getPos()) )
 				{
+					System.out.println("SHIT YEA");
 					debug("Main Loop", "Unit, " + unit.getName()  + ", is in proximty of its home");
 					unit.getHome().increaseAmount(unit.getCarry());
 					unit.setCarry(0);

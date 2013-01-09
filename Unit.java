@@ -15,14 +15,13 @@ public class Unit extends Thing implements Move
 	
 	// information for the dubugger
 	private Debug debug;
-	private int debugLevel = 2;
 
 	/*
 	 * Constructors
 	*/
 
 	// Basic constructor
-	public Unit(String nameValue, Home homeValue, Debug debugValue)
+	public Unit(String nameValue, Home homeValue, GridSquareStatus[] movesValue, Debug debugValue)
 	{
 		super(nameValue, debugValue);
 
@@ -30,6 +29,7 @@ public class Unit extends Thing implements Move
 		setHome(homeValue);
 		carry = 0;
 		//We must locate every child class of Thing at the end of the constructor.
+		moves = movesValue;
 		locate();
 	}
 
@@ -50,22 +50,57 @@ public class Unit extends Thing implements Move
 	 * Methods and variables for Unit to move
 	 */
 
+	private GridSquareStatus[] moves;
+
 	// Override the move method from the Move interface
 	// This will have to take parameters for checking surroundings
 	
 	@Override
-	public Boolean move()
+	public boolean move(GridSquareStatus[] movesValue)
 	{
 		super.debug("moving...");
 		// future: have states, and a case statement to decide what type of movemet to do
 		// random movment, follow breadcrums, head home... etc
-		int xValue = super.getRandomMove(super.getX())+super.getX();
-		int yValue = super.getRandomMove(super.getY())+super.getY();
-		setPos(xValue,yValue);
+		moves = movesValue;
+		Point p = super.translateMove(getValidRandomMove());
+		setPos(getX()+(int)p.getX(),getY()+(int)p.getY());
 		debug("move made.");
 		return true;
 	}
 
+	private int getValidRandomMove()
+	{
+		int i = 0;
+		while(i < 100)
+		{
+			int move = super.getRandomMove();
+			if(validMove(move))
+			{
+				return move;
+			}
+			i++;
+		}
+		debug("NO valid random move found");
+		return -1;
+	}
+
+	private boolean validMove(int moveValue)
+	{
+		// check moves has been filled in.
+		if(moves == null)
+		{
+			debug("Moves has not been instantiated. Deal with this.");
+			System.exit(1);
+		}
+		for(int i = 0; i < moves.length; i++)
+		{
+			if(moves[i] == GridSquareStatus.EMPTY)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
 	// Method to make a single move towards the Unit's home.
 	// This will probably need to be private.
 	public void moveHome()
@@ -127,45 +162,21 @@ public class Unit extends Thing implements Move
 		return carry;
 	}
 
+
+	public void locate(GridSquareStatus[] movesValue)
+	{
+		moves = movesValue;
+		locate();
+	}
 	// Override the locate method so that we can make sure the unit
 	// is locatated near home
+	// Parameter must containg moves from home.
 	@Override
 	public void locate()
 	{
-		Double rand = Math.random();
-		int newPos = (int)Math.rint(rand*7); // 7 gives us 8 posibilites (0-7)
-		int xValue = home.getX();
-		int yValue = home.getY();
-
-		switch(newPos)
-		{
-			case 0:
-				super.setPos(xValue-1, yValue-1);
-				break;
-			case 1:
-				super.setPos(xValue, yValue-1);
-				break;
-			case 2:
-				super.setPos(xValue+1, yValue-1);
-				break;
-			case 3:
-				super.setPos(xValue-1, yValue);
-				break;
-			case 4:
-				super.setPos(xValue+1, yValue);
-				break;
-			case 5:
-				super.setPos(xValue-1, yValue+1);
-				break;
-			case 6:
-				super.setPos(xValue, yValue+1);
-				break;
-			case 7:
-				super.setPos(xValue+1, yValue+1);
-				break;				
-			default:
-				break;
-		}
+		int newPos = getValidRandomMove();
+		Point p = super.translateMove(newPos);
+		super.setPos((int)p.getX()+home.getX(), (int)p.getY()+home.getY());
 	}
 
 	// END Helper methods
