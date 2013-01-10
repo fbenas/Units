@@ -5,7 +5,6 @@
 
 // Imports
 import java.util.ArrayList;
-import java.awt.Point;
 
 public class Unit extends Thing implements Move
 {
@@ -20,20 +19,6 @@ public class Unit extends Thing implements Move
 	/*
 	 * Constructors
 	*/
-
-	// Basic constructor
-	public Unit(String nameValue, Home homeValue, GridSquareStatus[] movesValue, Debug debugValue)
-	{
-		super(nameValue, debugValue);
-
-		// Unit specific, we must set the home.
-		setHome(homeValue);
-		carry = 0;
-		//We must locate every child class of Thing at the end of the constructor.
-		moves = movesValue;
-		locate();
-		logLocation();
-	}
 
 	// Constructor with x and y values to create a Unit with a specfic location
 	public Unit(int xValue, int yValue, String nameValue, Home homeValue, Debug debugValue)
@@ -61,11 +46,11 @@ public class Unit extends Thing implements Move
 	@Override
 	public boolean move(GridSquareStatus[] movesValue)
 	{
-		super.debug("moving...");
+		debug("moving...");
 		// future: have states, and a case statement to decide what type of movemet to do
 		// random movment, follow breadcrums, head home... etc
 		moves = movesValue;
-		Point p = super.translateMove(getValidRandomMove());
+		Point p = translateMove(getValidRandomMove());
 		setPos(getX()+(int)p.getX(),getY()+(int)p.getY());
 		logLocation();
 		debug("move made.");
@@ -77,7 +62,7 @@ public class Unit extends Thing implements Move
 		int i = 0;
 		while(i < 100)
 		{
-			int move = super.getRandomMove();
+			int move = getRandomMove();
 			if(validMove(move))
 			{
 				return move;
@@ -113,13 +98,18 @@ public class Unit extends Thing implements Move
 		int movePointer = history.size()-1;
 		if(movePointer >= 0)
 		{
-			setPos(history.get(movePointer));
-			history.remove(movePointer);
-			history.trimToSize();
+			setPos(new Point(history.get(movePointer)));
+			if(movePointer > 0)
+			{
+				history.remove(movePointer);
+			}
+			//history.trimToSize();
 		}
 		else
 		{
 			debug("Reached last move in History.");
+			outputHistory();
+			System.out.println("FAILED AGAIN");
 			System.exit(1);
 		}
 	}
@@ -132,7 +122,7 @@ public class Unit extends Thing implements Move
 
 	public boolean canInteract(int xValue, int yValue)
 	{
-		if(Math.abs(xValue-super.getX()) < 2 && Math.abs(yValue-super.getY()) < 2)
+		if(Math.abs(xValue-getX()) < 2 && Math.abs(yValue-getY()) < 2)
 		{
 			return true;
 		}
@@ -144,7 +134,17 @@ public class Unit extends Thing implements Move
 
 	public boolean canInteract(Point pValue)
 	{
-		return canInteract((int)pValue.getX(), (int)pValue.getY());
+		Point p = new Point(pValue);
+		p.sub(getPos());
+		if(Math.abs(p.getX()) < 2 && Math.abs(p.getY()) < 2)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		//return canInteract(pValue.getX(), pValue.getY());
 	}
 
 	private int carry;
@@ -191,7 +191,7 @@ public class Unit extends Thing implements Move
 	public void locate()
 	{
 		int newPos = getValidRandomMove();
-		Point p = super.translateMove(newPos);
+		Point p = translateMove(newPos);
 		setPos((int)p.getX()+home.getX(), (int)p.getY()+home.getY());
 	}
 	
@@ -227,7 +227,7 @@ public class Unit extends Thing implements Move
 	}
 	public void setHome(Home homeValue)
 	{
-		super.debug("setting home to " + homeValue.getName() + " at location " + homeValue.getX() +  "," + homeValue.getY());
+		debug("setting home to " + homeValue.getName() + " at location " + homeValue.getX() +  "," + homeValue.getY());
 		home = homeValue;
 	}
 }

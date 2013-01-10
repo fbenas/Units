@@ -29,7 +29,7 @@ public class Resource extends Thing
 		setAmount(amountValue);
 
 		// We must locate the thing.
-		super.setPos(xValue, yValue);
+		setPos(xValue, yValue);
 	}
 
 	/*

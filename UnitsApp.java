@@ -2,9 +2,6 @@
  * Main applciation for Units
  */
 
-// Imports
-import java.awt.Point;
-
 public class UnitsApp
 {
 	// Application wide vars
@@ -53,15 +50,16 @@ public class UnitsApp
 	private void go()
 	{
 		debug("Deployment", "Creating a Home");	
-		Home home = new Home(0,0,"H", debugger);
+		Home home = new Home(200,200,"H", debugger);
 		debug("Deployment", "Home, " + home.getName() + " created at " + home.getX() + "," + home.getY());	
 
 		debug("Deployment", "Creating a Unit");	
-		Unit unit = new Unit("U",home, MOVES, debugger);
+		Point randomPoint = getRandomValidGridPos();
+		Unit unit = new Unit(randomPoint.getX(), randomPoint.getY(), "U",home, debugger);
 		debug("Deployment", "Unit, " + unit.getName() + " created at " + unit.getX() + "," + unit.getY());
 
 		debug("Deployment", "Creating a Resource");	
-		Resource resource = new Resource(3,3,"R",resourceAmount,debugger);
+		Resource resource = new Resource(204,204,"R",resourceAmount,debugger);
 		debug("Deployment", "Resource, " + resource.getName() + " created at " + resource.getX() + "," + resource.getY());
 
 		int i = 0;
@@ -81,19 +79,20 @@ public class UnitsApp
 						debug("Main Loop", "Unit, " + unit.getName()  + ", has picked up a load");
 						unit.setCarry(carryAmount);
 						resource.reduceAmount(carryAmount);
+						unit.getHistory().remove(unit.getHistory().size()-1);
 					}
 				}
 				else
 				{
 					// Move Randomly
 					debug("Main Loop", "Unit, " + unit.getName()  + ", will make a random move");
-					unit.move(MOVES);
+					unit.move(getMoves(new Point(unit.getPos())));
 				}
 			}
 			else
 			{
 				debug("Main Loop", "Unit, " + unit.getName()  + ", is carrying a load");
-				if ( unit.canInteract(unit.getHome().getPos()) )
+				if ( unit.canInteract(new Point(unit.getHome().getPos())) )
 				{
 					debug("Main Loop", "Unit, " + unit.getName()  + ", is in proximty of its home");
 					unit.getHome().increaseAmount(unit.getCarry());
@@ -107,6 +106,23 @@ public class UnitsApp
 				}
 			}
 		}
+		debug("Main Loop", "Game Time Expired.");
+		debug("UnitsApp","Resource, " + resource.getName() + ", ended with an amount of: " + resource.getAmount());
+		debug("UnitsApp","Home, " + home.getName() + ", ended with an amount of: " + home.getAmount());
+		debug("UnitsApp","Unit, " + unit.getName() + ", ended with an amount of: " + unit.getCarry());
+		debug("UnitsApp","Exiting.");
+	}
+
+	private GridSquareStatus[] getMoves(Point p)
+	{
+		// Use point p to create array of possible moves
+		return MOVES;
+	}
+
+	private Point getRandomValidGridPos()
+	{
+		// Find an empty space on the grid.
+		return new Point(201,201);
 	}
 
 	private void debug(String name, String value)

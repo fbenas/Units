@@ -21,7 +21,7 @@ public class Home extends Thing
 		super(nameValue, debugValue);
 
 		// We must locate the thing.
-		super.setPos(xValue, yValue);
+		setPos(xValue, yValue);
 	}
 
 	// END Constructors
@@ -38,13 +38,13 @@ public class Home extends Thing
 	}
 	public void setAmount(int amountValue)
 	{
-		super.debug("Setting amount to " + amountValue);
+		debug("Setting amount to " + amountValue);
 		amount = amountValue;
 	}
 	public void increaseAmount(int increaseAmount)
 	{
 		int newAmount = amount+increaseAmount;
-		super.debug("Increasing amount, " + amount + " by " + increaseAmount + " to " + newAmount);
+		debug("Increasing amount, " + amount + " by " + increaseAmount + " to " + newAmount);
 		amount = newAmount;
 	}
 }

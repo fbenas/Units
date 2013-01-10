@@ -2,8 +2,6 @@
  * A public class that acts as a base class for all things on the ground.
  */
 
-import java.awt.Point;
-
 public class Thing
 {
 	// Application wide vars
@@ -53,15 +51,18 @@ public class Thing
 	{
 		return (int) pos.getY();
 	}
+
 	public Point getPos()
 	{
 		return pos;
 	}
+
 	public void setPos( int xValue, int yValue )
 	{
-		pos.setLocation(xValue, yValue);
-		debug("setting new position to " + xValue + "," + yValue);
+		pos = new Point(xValue, yValue);
+		debug("setting new position to " + (int)xValue + "," + (int)yValue);
 	}
+
 	public void setPos( Point p )
 	{
 		pos = p;
@@ -127,7 +128,7 @@ public class Thing
 	}
 
 	// Method for adding debug information from a Thing
-	protected void debug(String value)
+	protected void debug( String value )
 	{
 		debug.debug(this.getClass().getName() + "-" + name, value, debugLevel);
 	}
