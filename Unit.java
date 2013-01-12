@@ -35,8 +35,6 @@ public class Unit extends Thing implements Move
 	 * Methods and variables for Unit to move
 	 */
 
-	private GridSquareStatus[] moves;
-
 	// Override the move method from the Move interface
 	// This will have to take parameters for checking surroundings
 	
@@ -46,21 +44,20 @@ public class Unit extends Thing implements Move
 		debug("moving...");
 		// future: have states, and a case statement to decide what type of movemet to do
 		// random movment, follow breadcrums, head home... etc
-		moves = movesValue;
-		Point p = translateMove(getValidRandomMove());
+		Point p = translateMove(getValidRandomMove(movesValue));
 		setPos(getX()+(int)p.getX(),getY()+(int)p.getY());
 		logLocation();
 		debug("move made.");
 		return true;
 	}
 
-	private int getValidRandomMove()
+	private int getValidRandomMove(GridSquareStatus[] movesValue)
 	{
 		int i = 0;
 		while(i < 100)
 		{
-			int move = getRandomMove();
-			if(validMove(move))
+			int move = getRandomMove(movesValue);
+			if(validMove(move,movesValue))
 			{
 				return move;
 			}
@@ -70,23 +67,30 @@ public class Unit extends Thing implements Move
 		return -1;
 	}
 
-	private boolean validMove(int moveValue)
+	private boolean validMove(int moveValue, GridSquareStatus[] movesValue)
 	{
 		// check moves has been filled in.
-		if(moves == null)
+		if(movesValue == null)
 		{
 			debug("Moves has not been instantiated. Deal with this.");
 			System.exit(1);
 		}
-		for(int i = 0; i < moves.length; i++)
+		for(int i = 0; i < movesValue.length; i++)
 		{
-			if(moves[i] == GridSquareStatus.EMPTY)
+			if(movesValue[i] == GridSquareStatus.EMPTY)
 			{
 				return true;
 			}
 		}
 		return false;
 	}
+
+	protected int getRandomMove(GridSquareStatus[] movesValue)
+	{
+		Double rand = Math.random() * 7;
+		return (int)Math.rint(rand);
+	}
+
 	// Method to make a single move towards the Unit's home.
 	// This will probably need to be private.
 	public void moveHome()
@@ -175,19 +179,13 @@ public class Unit extends Thing implements Move
 		return carry;
 	}
 
-
-	public void locate(GridSquareStatus[] movesValue)
-	{
-		moves = movesValue;
-		locate();
-	}
 	// Override the locate method so that we can make sure the unit
 	// is locatated near home
 	// Parameter must containg moves from home.
 	@Override
-	public void locate()
+	public void locate(GridSquareStatus[] movesValue)
 	{
-		int newPos = getValidRandomMove();
+		int newPos = getValidRandomMove(movesValue);
 		Point p = translateMove(newPos);
 		setPos((int)p.getX()+home.getX(), (int)p.getY()+home.getY());
 	}

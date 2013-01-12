@@ -30,7 +30,7 @@ public class Thing extends Nothing
 	private Point pos; // x and y is the positon of the thing on the ground.
 
 	// Choose a starting position for the new thing.
-	public void locate()
+	public void locate(GridSquareStatus[] movesValue)
 	{
 		// Default is random, override this to change location behaviour
 		setPos(getRandomGroundPos(),getRandomGroundPos());
@@ -93,12 +93,6 @@ public class Thing extends Nothing
 			default:
 				return null;
 		}
-	}
-
-	protected int getRandomMove()
-	{
-		Double rand = Math.random() * 7;
-		return (int)Math.rint(rand);
 	}
 
 	// This method gets a valid x,y coordinate

@@ -8,11 +8,11 @@ public class Home extends Thing
 	*/
 
 	// Basic constructor
-	public Home(String nameValue, Logger debugValue)
+	public Home(String nameValue, Logger debugValue, GridSquareStatus[] movesValue)
 	{
 		super(nameValue, debugValue,"home");
 		// We must locate the thing
-		locate();
+		locate(movesValue);
 	}
 
 	// Constructor with x and y values to create a Unit with a specfic location

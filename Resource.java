@@ -5,7 +5,7 @@ public class Resource extends Thing
 {
 	// Basic constructor
 	// Additionally we add an intial amount of resource
-	public Resource(String nameValue, int amountValue, Logger debugValue)
+	public Resource(String nameValue, int amountValue, Logger debugValue, GridSquareStatus[] movesValue)
 	{
 		super(nameValue, debugValue, "resource");
 
@@ -15,7 +15,7 @@ public class Resource extends Thing
 		setAmount(amountValue);
 
 		// We must locate every child class of Thing at the end of the constructor.
-		locate();
+		locate(movesValue);
 	}
 
 	// Constructor with x and y values to create a Resource with a specfic location
