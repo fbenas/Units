@@ -10,6 +10,7 @@ public class Unit extends Thing implements Move
 {
 	// Application wide vars
 	// THESE SHOULD MOVE TO A STATIC CLASS.
+	private int carryAmount = 10;
 	private int groundX = 50;
 	private int groundY = 50;
 
@@ -39,56 +40,15 @@ public class Unit extends Thing implements Move
 	// This will have to take parameters for checking surroundings
 	
 	@Override
-	public boolean move(GridSquareStatus[] movesValue)
+	public boolean move(Ground movesValue)
 	{
 		debug("moving...");
-		// future: have states, and a case statement to decide what type of movemet to do
-		// random movment, follow breadcrums, head home... etc
-		Point p = translateMove(getValidRandomMove(movesValue));
-		setPos(getX()+(int)p.getX(),getY()+(int)p.getY());
+		Point p = getRandomValidSpace(movesValue);
+		p.add(getX(),getY());
+		setPos(p);
 		logLocation();
 		debug("move made.");
 		return true;
-	}
-
-	private int getValidRandomMove(GridSquareStatus[] movesValue)
-	{
-		int i = 0;
-		while(i < 100)
-		{
-			int move = getRandomMove(movesValue);
-			if(validMove(move,movesValue))
-			{
-				return move;
-			}
-			i++;
-		}
-		debug("NO valid random move found");
-		return -1;
-	}
-
-	private boolean validMove(int moveValue, GridSquareStatus[] movesValue)
-	{
-		// check moves has been filled in.
-		if(movesValue == null)
-		{
-			debug("Moves has not been instantiated. Deal with this.");
-			System.exit(1);
-		}
-		for(int i = 0; i < movesValue.length; i++)
-		{
-			if(movesValue[i] == GridSquareStatus.EMPTY)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
-	protected int getRandomMove(GridSquareStatus[] movesValue)
-	{
-		Double rand = Math.random() * 7;
-		return (int)Math.rint(rand);
 	}
 
 	// Method to make a single move towards the Unit's home.
@@ -133,6 +93,33 @@ public class Unit extends Thing implements Move
 		}
 	}
 
+
+	// TThis overload is better for many Resources 
+	public boolean canInteract(Ground groundValue)
+	{
+		Ground moves = getLocalMoves(groundValue, getPos(), "Unit-Resource");
+		for(int i=0; i<3; i++)
+		{
+			for(int j=0; j<3; j++)
+			{
+				try
+				{
+					Resource r = (Resource)moves.getSpace(i,j);
+					if(r.getAmount() >= carryAmount)
+					{
+						return true;
+					}
+				}
+				catch (NullPointerException e)
+				{
+					// do nothing
+				}
+			}
+		}
+		return false;
+	}
+
+	// This overlaod is better for a small number of resources
 	public boolean canInteract(Point pValue)
 	{
 		Point p = new Point(pValue);
@@ -145,7 +132,6 @@ public class Unit extends Thing implements Move
 		{
 			return false;
 		}
-		//return canInteract(pValue.getX(), pValue.getY());
 	}
 
 	private int carry;
@@ -179,17 +165,6 @@ public class Unit extends Thing implements Move
 		return carry;
 	}
 
-	// Override the locate method so that we can make sure the unit
-	// is locatated near home
-	// Parameter must containg moves from home.
-	@Override
-	public void locate(GridSquareStatus[] movesValue)
-	{
-		int newPos = getValidRandomMove(movesValue);
-		Point p = translateMove(newPos);
-		setPos((int)p.getX()+home.getX(), (int)p.getY()+home.getY());
-	}
-	
 	private ArrayList<Point> history = new ArrayList<Point>();	
 
 	public ArrayList<Point> getHistory()

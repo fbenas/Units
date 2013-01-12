@@ -5,7 +5,7 @@ public class Resource extends Thing
 {
 	// Basic constructor
 	// Additionally we add an intial amount of resource
-	public Resource(String nameValue, int amountValue, Logger debugValue, GridSquareStatus[] movesValue)
+	public Resource(String nameValue, int amountValue, Logger debugValue, Ground movesValue)
 	{
 		super(nameValue, debugValue, "resource");
 
@@ -19,6 +19,7 @@ public class Resource extends Thing
 	}
 
 	// Constructor with x and y values to create a Resource with a specfic location
+	// Only use this for debugging, or check the status of the position x,y first	
 	// Additionally we add an intial amount of resource
 	public Resource(int xValue, int yValue, String nameValue, int amountValue, Logger debugValue )
 	{
@@ -67,7 +68,7 @@ public class Resource extends Thing
 	public int reduceAmount(int reduceValue)
 	{
 		int newAmount = amount-reduceValue;
-		if(amount-reduceValue > 0)
+		if(amount-reduceValue >= 0)
 		{
 			debug("reducing amount, " + amount + " by " + reduceValue + " to " + newAmount);
 			amount = newAmount;

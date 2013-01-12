@@ -1,13 +1,13 @@
 public class Nothing
 {
 	protected final String type;
-	private Logger debug;
+	protected Logger debugger;
 	private final int debugLevel;
 	
 	public Nothing(Logger debugValue)
 	{
-		debug = debugValue;
-		debugLevel = 3;
+		debugger = debugValue;
+		debugLevel = 2;
  		name = "nothing";
 		type = "empty";
 
@@ -16,7 +16,7 @@ public class Nothing
 	public Nothing(String nameValue, String typeValue, int debugLevelValue, Logger debugValue)
 	{
 		type = typeValue;
-		debug = debugValue;
+		debugger = debugValue;
 		debugLevel = debugLevelValue;
 		if(nameValue != null && nameValue != "")
 		{
@@ -42,9 +42,52 @@ public class Nothing
 		name = nameValue;
 	}
 
+	// Ony works for 3by3 grids with pValue at the center
+	// Use a parameter for name, incase we are creating a new ground from ground.
+	protected Ground getLocalMoves(Ground groundValue, Point pValue, String nameValue)
+	{
+		Ground moves = new Ground(3,3,nameValue,debugger);
+	
+		for(int i= 0; i< 3; i++)
+		{
+			for(int j=0; j< 3; j++)
+			{
+				Point p = new Point(pValue);
+				// -1 to get the surrounding squares
+				p.add(i-1,j-1);
+
+				try
+				{
+					//get the object
+					Nothing thing = groundValue.getSpace(p);
+
+					// Cast to Thing or run clearSpace
+					if(thing.getType() == "empty")
+					{
+						// add a Nothing object into local grid
+						moves.clearSpace(i,j);
+					}
+					else
+					{
+						// Add the Thing to the local grid
+						moves.fillSpace((Thing)thing, i,j);
+					}		
+				}
+				catch(ArrayIndexOutOfBoundsException e)
+				{
+					// Block the space
+					moves.blockSpace(i,j);
+				}
+			}
+		}
+		return moves;
+	}
+
 	// Method for adding debug information from a Thing
 	protected void debug( String value )
 	{
-		debug.debug(getType() + "-" + name, value, debugLevel);
+		debugger.debug(getType() + "-" + name, value, debugLevel);
 	}
+
+
 }

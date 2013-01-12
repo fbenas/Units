@@ -9,7 +9,7 @@ public interface Move
 	*/
 
 	// Move method gets to decide how to move, then make the required movements
-	public abstract boolean move(GridSquareStatus[] moves);
+	public abstract boolean move(Ground moves);
 
 	// END movement methods and variables
 	

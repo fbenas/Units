@@ -16,7 +16,7 @@ public class Thing extends Nothing
 	// Basic constructor, setting name and the debugger
 	public Thing(String nameValue, Logger debugValue, String typeValue)
 	{
-		super(nameValue, typeValue, 3, debugValue);
+		super(nameValue, typeValue, 2, debugValue);
 		pos = new Point();
 	}
 
@@ -30,10 +30,11 @@ public class Thing extends Nothing
 	private Point pos; // x and y is the positon of the thing on the ground.
 
 	// Choose a starting position for the new thing.
-	public void locate(GridSquareStatus[] movesValue)
+	public void locate(Ground movesValue)
 	{
 		// Default is random, override this to change location behaviour
-		setPos(getRandomGroundPos(),getRandomGroundPos());
+		Point rand = getRandomValidSpace(movesValue);
+		setPos(rand);
 	}
 
 	public int getX()
@@ -69,36 +70,33 @@ public class Thing extends Nothing
 	 * Perhaps place these in another helper class, if there's lots.
 	*/
 
-	// Translates a Thing's local move to a valid board move.
-	protected Point translateMove(int value)
+	// Return a valid random move (method assumes there is one.)
+	protected Point getRandomValidSpace(Ground movesValue)
 	{
-		switch(value)
+		while(true)
 		{
-			case 0:
-				return new Point(-1,-1);
-			case 1:
-				return new Point(0,-1);
-			case 2:
-				return new Point(1,-1);
-			case 3:
-				return new Point(-1,0);
-			case 4:
-				return new Point(1,0);
-			case 5:
-				return new Point(-1,1);
-			case 6:
-				return new Point(0,1);
-			case 7:
-				return new Point(1,1);			
-			default:
-				return null;
+			Point rand = getRandomSpace(movesValue.getX()-1,movesValue.getY()-1);
+			try
+			{
+				if(movesValue.getSpace(rand.getX(), rand.getY()).getType() == "empty")
+				{
+					return rand;
+				}
+			}
+			catch(NullPointerException e)
+			{
+				// Do Nothing
+			}
+		
 		}
 	}
 
-	// This method gets a valid x,y coordinate
-	protected int getRandomGroundPos()
+	// Get a random point
+	private Point getRandomSpace(int xValue, int yValue)
 	{
-		Double rand = Math.random() * groundX;
-		return (int)Math.rint(rand);
+		Point rand = new Point(); 
+		rand.setX((int)Math.rint(Math.random() * xValue));
+		rand.setY((int)Math.rint(Math.random() * yValue));
+		return rand;
 	}
 }

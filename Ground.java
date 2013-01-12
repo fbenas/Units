@@ -4,12 +4,10 @@ public class Ground extends Nothing
 	private final int y;
 
 	private Nothing[][] ground;
-	private Logger debug;
 
 	public Ground(int xValue, int yValue, String nameValue, Logger debugValue)
 	{
-		super(nameValue, "ground", 2, debugValue);
-		debug = debugValue;
+		super(nameValue, "ground", 3, debugValue);
 		debug("Creating ground with dimensions: " + xValue + "," + yValue);
 		x = xValue;
 		y = yValue;
@@ -21,20 +19,21 @@ public class Ground extends Nothing
 	public void clearGround()
 	{
 		debug("Clearing ground");
-		for(Nothing[] col : ground)
+		for(int i=0; i < x; i++)
 		{
-			for (Nothing stuff : col)
+			for (int j=0; j < y; j++)
 			{
-				stuff = new Nothing(debug);
+				clearSpace(i,j);
 			}
 		}
 	}
 
-	public boolean fillSpace(Thing thingValue)
+	// Need to pass coordinates as we are using two different coordinate systems
+	public boolean fillSpace(Thing thingValue, int xValue, int yValue)
 	{
-		if(ground[thingValue.getX()][thingValue.getY()].getType() == "empty")
+		if(ground[xValue][xValue].getType() == "empty")
 		{
-			ground[thingValue.getX()][thingValue.getY()] = (Nothing) thingValue;
+			ground[xValue][yValue] = (Nothing) thingValue;
 			debug("Added new " + thingValue.getType() + " at position " + thingValue.getX() + "," + thingValue.getY() + " with name " + thingValue.getName());
 			return true;
 		}
@@ -45,14 +44,49 @@ public class Ground extends Nothing
 		}
 	}
 
+	public boolean fillSpace(Thing thingValue, Point pValue)
+	{
+		return fillSpace(thingValue, pValue.getX(), pValue.getY());
+	}
+
 	public void clearSpace(int xValue, int yValue)
 	{
-		ground[xValue][yValue] = new Nothing(debug);
+		ground[xValue][yValue] = new Nothing(debugger);
+	}
+
+	public void clearSpace(Point pValue)
+	{
+		clearSpace(pValue.getX(), pValue.getY());
 	}
 
 	public void blockSpace(int xValue, int yValue)
 	{
 		ground[xValue][yValue] = null;
+	}
+
+	public void blockSpace(Point pValue)
+	{
+		blockSpace(pValue.getX(), pValue.getY());
+	}
+
+	public Nothing getSpace(int xValue, int yValue) 
+	{	
+		return ground[xValue][yValue];
+	}
+
+	public Nothing getSpace(Point pValue)
+	{
+		return getSpace(pValue.getX(), pValue.getY());
+	}
+
+	public int getX()
+	{
+		return x;
+	}
+
+	public int getY()
+	{
+		return y;
 	}
 
 }

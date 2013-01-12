@@ -13,16 +13,7 @@ public class UnitsApp
 	private int carryAmount = 10;
 	private int resourceAmount = 100;
 	private int gameTime = 200;
-	private GridSquareStatus[] MOVES = new GridSquareStatus[]{
-						GridSquareStatus.EMPTY, 
-						GridSquareStatus.EMPTY,
-						GridSquareStatus.EMPTY,
-						GridSquareStatus.EMPTY,
-						GridSquareStatus.EMPTY,
-						GridSquareStatus.EMPTY,
-						GridSquareStatus.EMPTY,
-						GridSquareStatus.EMPTY
-					};
+	private Ground ground;
 
 	// This must be set up, either true or false.
 	private Logger debugger;
@@ -49,13 +40,17 @@ public class UnitsApp
 
 	private void go()
 	{
+		debug("Deployment","Creating main Ground");
+		ground = new Ground(groundX,groundY,"Ground",debugger);
+		debug("Deployment","Ground " + ground.getName() + " created with size of " + ground.getX() + "," + ground.getY());
+
 		debug("Deployment", "Creating a Home");	
 		Home home = new Home(200,200,"H", debugger);
 		debug("Deployment", "Home, " + home.getName() + " created at " + home.getX() + "," + home.getY());	
 
-		debug("Deployment", "Creating a Unit");	
-		Point randomPoint = getRandomValidGridPos();
-		Unit unit = new Unit(randomPoint.getX(), randomPoint.getY(), "U",home, debugger);
+		debug("Deployment", "Creating a Unit from home " + home.getName());		
+		Unit unit = home.spawnUnit("unit", ground);
+		//Unit unit = new Unit(randomPoint.getX(), randomPoint.getY(), "U",home, debugger);
 		debug("Deployment", "Unit, " + unit.getName() + " created at " + unit.getX() + "," + unit.getY());
 
 		debug("Deployment", "Creating a Resource");	
@@ -86,7 +81,7 @@ public class UnitsApp
 				{
 					// Move Randomly
 					debug("Main Loop", "Unit, " + unit.getName()  + ", will make a random move");
-					unit.move(getMoves(new Point(unit.getPos())));
+					unit.move(getMoves(unit.getPos(), unit.getName() + "'s local moves"));
 				}
 			}
 			else
@@ -113,12 +108,6 @@ public class UnitsApp
 		debug("UnitsApp","Exiting.");
 	}
 
-	private GridSquareStatus[] getMoves(Point p)
-	{
-		// Use point p to create array of possible moves
-		return MOVES;
-	}
-
 	private Point getRandomValidGridPos()
 	{
 		// Find an empty space on the grid.
@@ -128,5 +117,20 @@ public class UnitsApp
 	private void debug(String name, String value)
 	{
 		debugger.debug(name, value,1);
+	}
+
+	private Ground getMoves(Point pValue, String nameValue)
+	{
+		// Create a ground to hold the local moves
+		if(ground == null)
+		{
+			//System.exit(1);
+		}
+		Ground moves = ground.getLocalMoves(ground, pValue, nameValue);
+
+		// Fill moves
+
+		return moves;
+
 	}
 }
