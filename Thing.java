@@ -2,27 +2,21 @@
  * A public class that acts as a base class for all things on the ground.
  */
 
-public class Thing
+public class Thing extends Nothing
 {
 	// Application wide vars
 	// THESE SHOULD MOVE TO A STATIC CLASS.
 	private int groundX = 50;
 	private int groundY = 50;
 	
-	// information for the dubugger
-	private Debug debug;
-	private int debugLevel = 2;
-
 	/*
 	 * Constructors
 	*/
 
 	// Basic constructor, setting name and the debugger
-	public Thing(String nameValue, Debug debugValue)
+	public Thing(String nameValue, Logger debugValue, String typeValue)
 	{
-		debug = debugValue;
-		if(nameValue != null && nameValue != "")
-			name = nameValue;
+		super(nameValue, typeValue, 3, debugValue);
 		pos = new Point();
 	}
 
@@ -70,19 +64,6 @@ public class Thing
 	}
 	// END location methods
 
-	// name variable and methods
-	private String name;
-
-	public String getName()
-	{
-		return name;
-	}
-	public void setName(String nameValue)
-	{
-		debug("changing name of " + name +  " to " + nameValue);
-		name = nameValue;
-	}
-
 	/*
 	 * Helper methods for a Thing
 	 * Perhaps place these in another helper class, if there's lots.
@@ -125,11 +106,5 @@ public class Thing
 	{
 		Double rand = Math.random() * groundX;
 		return (int)Math.rint(rand);
-	}
-
-	// Method for adding debug information from a Thing
-	protected void debug( String value )
-	{
-		debug.debug(this.getClass().getName() + "-" + name, value, debugLevel);
 	}
 }

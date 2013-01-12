@@ -25,10 +25,10 @@ public class UnitsApp
 					};
 
 	// This must be set up, either true or false.
-	private Debug debugger;
+	private Logger debugger;
 	public UnitsApp(int runtimeLevelValue)
 	{
-		debugger = new Debug(runtimeLevelValue);
+		debugger = new Logger(runtimeLevelValue);
 		debug("Constructor", "Debugger set with debugging value of " + runtimeLevelValue);	
 		go();
 

@@ -5,9 +5,9 @@ public class Resource extends Thing
 {
 	// Basic constructor
 	// Additionally we add an intial amount of resource
-	public Resource(String nameValue, int amountValue, Debug debugValue)
+	public Resource(String nameValue, int amountValue, Logger debugValue)
 	{
-		super(nameValue, debugValue);
+		super(nameValue, debugValue, "resource");
 
 		// Set the amount and inital amount.
 		setInitalAmount(amountValue);
@@ -20,9 +20,9 @@ public class Resource extends Thing
 
 	// Constructor with x and y values to create a Resource with a specfic location
 	// Additionally we add an intial amount of resource
-	public Resource(int xValue, int yValue, String nameValue, int amountValue, Debug debugValue )
+	public Resource(int xValue, int yValue, String nameValue, int amountValue, Logger debugValue )
 	{
-		super(nameValue, debugValue);
+		super(nameValue, debugValue, "resource");
 
 		// Set the amount and the inital amount.
 		setInitalAmount(amountValue);

@@ -1,24 +1,23 @@
 /*
  * Public class to print debug information in a meaningfull way to the console.
  */
-public class Debug
+public class Logger
 {
-	// debug levels:
+	// Logger levels:
 	// 1 = application (top level)
-	// 2 = Things
-	// 
-	public Debug(int levelValue)
+	// 2 = Ground
+	// 3 = Things (and the base class Noting)
+	private static int level;
+	public Logger(int levelValue)
 	{
 		level = levelValue;
 	}
-
-	private int level;
 
 	public void setLevel(int levelValue)
 	{
 		level = levelValue;
 	}
-	public void debug(String name, String value, int levelValue)
+	public static void debug(String name, String value, int levelValue)
 	{
 		// Only show stuff on required level and above
 		String tabs = "";
@@ -28,6 +27,6 @@ public class Debug
 			System.out.println(tabs + name + ": " + value);
 	}
 
-	//END Debug methods and variables
+	//END Logger methods and variables
 
 }

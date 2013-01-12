@@ -8,17 +8,17 @@ public class Home extends Thing
 	*/
 
 	// Basic constructor
-	public Home(String nameValue, Debug debugValue)
+	public Home(String nameValue, Logger debugValue)
 	{
-		super(nameValue, debugValue);
+		super(nameValue, debugValue,"home");
 		// We must locate the thing
 		locate();
 	}
 
 	// Constructor with x and y values to create a Unit with a specfic location
-	public Home(int xValue, int yValue, String nameValue, Debug debugValue)
+	public Home(int xValue, int yValue, String nameValue, Logger debugValue)
 	{
-		super(nameValue, debugValue);
+		super(nameValue, debugValue, "home");
 
 		// We must locate the thing.
 		setPos(xValue, yValue);

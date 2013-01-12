@@ -12,18 +12,15 @@ public class Unit extends Thing implements Move
 	// THESE SHOULD MOVE TO A STATIC CLASS.
 	private int groundX = 50;
 	private int groundY = 50;
-	
-	// information for the dubugger
-	private Debug debug;
 
 	/*
 	 * Constructors
 	*/
 
 	// Constructor with x and y values to create a Unit with a specfic location
-	public Unit(int xValue, int yValue, String nameValue, Home homeValue, Debug debugValue)
+	public Unit(int xValue, int yValue, String nameValue, Home homeValue, Logger debugValue)
 	{
-		super(nameValue, debugValue);
+		super(nameValue, debugValue, "unit");
 
 		//Unit specific, we must set the home.
 		setHome(homeValue);
