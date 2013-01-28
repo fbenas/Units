@@ -11,8 +11,6 @@ public class Unit extends Thing implements Move
 	// Application wide vars
 	// THESE SHOULD MOVE TO A STATIC CLASS.
 	private int carryAmount = 10;
-	private int groundX = 50;
-	private int groundY = 50;
 
 	/*
 	 * Constructors
@@ -21,7 +19,7 @@ public class Unit extends Thing implements Move
 	// Constructor with x and y values to create a Unit with a specfic location
 	public Unit(int xValue, int yValue, String nameValue, Home homeValue, Logger debugValue)
 	{
-		super(nameValue, debugValue, "unit");
+		super(nameValue, debugValue, GridType.UNIT);
 
 		//Unit specific, we must set the home.
 		setHome(homeValue);
@@ -40,11 +38,11 @@ public class Unit extends Thing implements Move
 	// This will have to take parameters for checking surroundings
 	
 	@Override
-	public boolean move(Ground movesValue)
+	public boolean move(Ground groundValue)
 	{
 		debug("moving...");
-		Point p = getRandomValidSpace(movesValue);
-		p.add(getX(),getY());
+
+		Point p = getRandomValidMove(groundValue);
 		setPos(p);
 		logLocation();
 		debug("move made.");

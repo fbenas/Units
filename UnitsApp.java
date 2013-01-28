@@ -11,8 +11,8 @@ public class UnitsApp
 	private int minMove = 10;
 	private int debugLevel = 1;
 	private int carryAmount = 10;
-	private int resourceAmount = 100;
-	private int gameTime = 200;
+	private int resourceAmount = 10000;
+	private int gameTime = 1000;
 	private Ground ground;
 
 	// This must be set up, either true or false.
@@ -46,15 +46,17 @@ public class UnitsApp
 
 		debug("Deployment", "Creating a Home");	
 		Home home = new Home(200,200,"H", debugger);
+		ground.fillSpace(home, home.getPos());
 		debug("Deployment", "Home, " + home.getName() + " created at " + home.getX() + "," + home.getY());	
 
 		debug("Deployment", "Creating a Unit from home " + home.getName());		
 		Unit unit = home.spawnUnit("unit", ground);
+		ground.fillSpace(unit, unit.getPos());
 		//Unit unit = new Unit(randomPoint.getX(), randomPoint.getY(), "U",home, debugger);
 		debug("Deployment", "Unit, " + unit.getName() + " created at " + unit.getX() + "," + unit.getY());
 
 		debug("Deployment", "Creating a Resource");	
-		Resource resource = new Resource(204,204,"R",resourceAmount,debugger);
+		Resource resource = new Resource(203,203,"R",resourceAmount,debugger);
 		debug("Deployment", "Resource, " + resource.getName() + " created at " + resource.getX() + "," + resource.getY());
 
 		int i = 0;
@@ -74,14 +76,18 @@ public class UnitsApp
 						debug("Main Loop", "Unit, " + unit.getName()  + ", has picked up a load");
 						unit.setCarry(carryAmount);
 						resource.reduceAmount(carryAmount);
-						unit.getHistory().remove(unit.getHistory().size()-1);
+						if(unit.getHistory().size()>0)
+						{
+							unit.getHistory().remove(unit.getHistory().size()-1);
+						}
 					}
 				}
 				else
 				{
 					// Move Randomly
 					debug("Main Loop", "Unit, " + unit.getName()  + ", will make a random move");
-					unit.move(getMoves(unit.getPos(), unit.getName() + "'s local moves"));
+					moveUnit(unit);
+					debug("Main Loop","Unit, " + unit.getName() + " has made a move, and grid is up-to-date");
 				}
 			}
 			else
@@ -97,7 +103,7 @@ public class UnitsApp
 				else
 				{
 					debug("Main Loop", "Unit, " + unit.getName()  + ", will move toward home. " + unit.getHistory().size() + " moves left" );
-					unit.moveHome();
+					moveUnitHome(unit);
 				}
 			}
 		}
@@ -108,7 +114,9 @@ public class UnitsApp
 		debug("UnitsApp","Exiting.");
 	}
 
-	private Point getRandomValidGridPos()
+	// We should use the thing we are moving to find the space.
+	// NEEDS A CHANGE
+	private Point getRandomValidGridPos(Thing thing)
 	{
 		// Find an empty space on the grid.
 		return new Point(201,201);
@@ -119,18 +127,29 @@ public class UnitsApp
 		debugger.debug(name, value,1);
 	}
 
-	private Ground getMoves(Point pValue, String nameValue)
+	private void moveUnit(Unit unitValue)
 	{
-		// Create a ground to hold the local moves
-		if(ground == null)
-		{
-			//System.exit(1);
-		}
-		Ground moves = ground.getLocalMoves(ground, pValue, nameValue);
+		//round moves = getMoves(unitValue.getPos(), unitValue.getName() + "'s local moves");
+		
+		// Get units old position
+		Point p = new Point(unitValue.getPos());
 
-		// Fill moves
+		// Move unit
+		unitValue.move(ground);
+		
+		// Update grid
+		ground.moveSpace(p,unitValue.getPos());
+	}
 
-		return moves;
+	private void moveUnitHome(Unit unitValue)
+	{
+		// Get units old position
+		Point p = new Point(unitValue.getPos());
 
+		// Move unit Home
+		unitValue.moveHome();
+		
+		// Update grid
+		ground.moveSpace(p,unitValue.getPos());
 	}
 }

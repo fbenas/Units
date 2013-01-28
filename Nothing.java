@@ -1,6 +1,6 @@
 public class Nothing
 {
-	protected final String type;
+	protected final GridType type;
 	protected Logger debugger;
 	private final int debugLevel;
 	
@@ -9,11 +9,11 @@ public class Nothing
 		debugger = debugValue;
 		debugLevel = 2;
  		name = "nothing";
-		type = "empty";
+		type = GridType.EMPTY;
 
 	}
 
-	public Nothing(String nameValue, String typeValue, int debugLevelValue, Logger debugValue)
+	public Nothing(String nameValue, GridType typeValue, int debugLevelValue, Logger debugValue)
 	{
 		type = typeValue;
 		debugger = debugValue;
@@ -24,7 +24,7 @@ public class Nothing
 		}
 	}
 
-	public String getType()
+	public GridType getType()
 	{
 		return type;
 	}
@@ -52,6 +52,10 @@ public class Nothing
 		{
 			for(int j=0; j< 3; j++)
 			{
+				if(i==1 && j==1)
+				{
+					continue;
+				}
 				Point p = new Point(pValue);
 				// -1 to get the surrounding squares
 				p.add(i-1,j-1);
@@ -62,7 +66,7 @@ public class Nothing
 					Nothing thing = groundValue.getSpace(p);
 
 					// Cast to Thing or run clearSpace
-					if(thing.getType() == "empty")
+					if(thing.getType() == GridType.EMPTY)
 					{
 						// add a Nothing object into local grid
 						moves.clearSpace(i,j);

@@ -8,18 +8,18 @@ public class Home extends Thing
 	*/
 
 	// Basic constructor
-	public Home(String nameValue, Logger debugValue, Ground movesValue)
+	public Home(String nameValue, Logger debugValue, Ground groundValue)
 	{
-		super(nameValue, debugValue,"home");
+		super(nameValue, debugValue, GridType.HOME);
 		// We must locate the thing
-		locate(movesValue);
+		locate(groundValue);
 	}
 
 	// Constructor with x and y values to create a Unit with a specfic location
 	// Use only for debugging, if used normally we need to check the x and y pos is clear!
 	public Home(int xValue, int yValue, String nameValue, Logger debugValue)
 	{
-		super(nameValue, debugValue, "home");
+		super(nameValue, debugValue, GridType.HOME);
 
 		// We must locate the thing.
 		setPos(xValue, yValue);
@@ -51,14 +51,12 @@ public class Home extends Thing
 		amount = newAmount;
 	}
 
+	// Spawn a unit one valid move away from this location
 	public Unit spawnUnit(String nameValue, Ground groundValue)
 	{
-		// Create moves from home's location
-		Ground moves = getLocalMoves(groundValue, getPos(), getName());
-		// Get a random position for unit, next to home.
-		Point p = getRandomValidSpace(moves);
-		// Translate this local move into a global one.
-		p.add(getX()-1,getY()-1);
+		// Get a random move
+		Point p = getRandomValidMove(groundValue);
+		// return the new Unit
 		return new Unit(p.getX(),p.getY(),nameValue,this,debugger);
 	}
 

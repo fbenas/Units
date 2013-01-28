@@ -42,27 +42,31 @@ public class Point
 		y = yValue;
 	}
 
-	public void add(int xValue, int yValue)
+	public Point add(int xValue, int yValue)
 	{
 		x += xValue;
 		y += xValue;
+		return this;
 	}
 
-	public void sub(int xValue, int yValue)
+	public Point sub(int xValue, int yValue)
 	{
 		x -= xValue;
 		y -= yValue;
+		return this;
 	}
 
-	public void add(Point pValue)
+	public Point add(Point pValue)
 	{
 		x += pValue.getX();
 		y += pValue.getY();
+		return this;
 	}
 
-	public void sub(Point pValue)
+	public Point sub(Point pValue)
 	{
 		x -= pValue.getX();
 		y -= pValue.getY();
+		return this;
 	}
 }

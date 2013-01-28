@@ -4,17 +4,12 @@
 
 public class Thing extends Nothing
 {
-	// Application wide vars
-	// THESE SHOULD MOVE TO A STATIC CLASS.
-	private int groundX = 50;
-	private int groundY = 50;
-	
 	/*
 	 * Constructors
 	*/
 
 	// Basic constructor, setting name and the debugger
-	public Thing(String nameValue, Logger debugValue, String typeValue)
+	public Thing(String nameValue, Logger debugValue, GridType typeValue)
 	{
 		super(nameValue, typeValue, 2, debugValue);
 		pos = new Point();
@@ -27,14 +22,13 @@ public class Thing extends Nothing
 	 * set and get x and y coordinates
 	*/
 
-	private Point pos; // x and y is the positon of the thing on the ground.
+	protected Point pos; // x and y is the positon of the thing on the ground.
 
 	// Choose a starting position for the new thing.
 	public void locate(Ground movesValue)
 	{
-		// Default is random, override this to change location behaviour
-		Point rand = getRandomValidSpace(movesValue);
-		setPos(rand);
+		// Find a random valid space
+		setPos(getRandomValidSpace(movesValue));
 	}
 
 	public int getX()
@@ -60,8 +54,8 @@ public class Thing extends Nothing
 
 	public void setPos( Point p )
 	{
-		pos = p;
-		debug("setting new position to " + p.getX() + "," + p.getY());
+		pos = new Point(p);
+		debug("setting new position to " + pos.getX() + "," + pos.getY());
 	}
 	// END location methods
 
@@ -71,32 +65,69 @@ public class Thing extends Nothing
 	*/
 
 	// Return a valid random move (method assumes there is one.)
-	protected Point getRandomValidSpace(Ground movesValue)
+	protected Point getRandomValidMove(Ground movesValue)
 	{
+
 		while(true)
 		{
-			Point rand = getRandomSpace(movesValue.getX()-1,movesValue.getY()-1);
-			try
+			// Get any random step
+			Point step = getRandomMove();
+
+			// Check that the move is not 0,0
+			if(step.getX() == 0 && step.getY() == 0)
 			{
-				if(movesValue.getSpace(rand.getX(), rand.getY()).getType() == "empty")
-				{
-					return rand;
-				}
+				continue;
 			}
-			catch(NullPointerException e)
+			// Add the current pos to the step to get our prospective position
+			Point uncheckedMove = step.add(pos);
+
+			// Check the validity of that square
+			if(movesValue.getSpace(uncheckedMove) != null && movesValue.getSpace(uncheckedMove).getType() == GridType.EMPTY)
 			{
-				// Do Nothing
+				// Move is valid
+				return step;
 			}
-		
 		}
 	}
 
-	// Get a random point
+	// Return a valid random board position
+	protected Point getRandomValidSpace(Ground movesValue)
+	{
+
+		while(true)
+		{
+			// Get any random space
+			Point uncheckedMove = getRandomSpace(movesValue.getX(), movesValue.getY());
+
+			// Check the validity of that space
+			if(movesValue.getSpace(uncheckedMove) != null && movesValue.getSpace(uncheckedMove).getType() == GridType.EMPTY)
+			{
+				// Move is valid
+				return uncheckedMove;
+			}
+		}
+	}
+
+	// Returns a valid grid sqaure based on the grid size xValue and yValue
 	private Point getRandomSpace(int xValue, int yValue)
 	{
 		Point rand = new Point(); 
+		// Math.random returns a number between 0 and 1 inclusive
+		// So minus 1.
+		xValue--;
+		yValue--;
 		rand.setX((int)Math.rint(Math.random() * xValue));
 		rand.setY((int)Math.rint(Math.random() * yValue));
 		return rand;
 	}
+
+	// Returns a move of one ranging from -1,-1 to 1,1 
+	private Point getRandomMove()
+	{
+		// Gets an  int between -1 and 1
+		int x = (int)Math.rint(Math.random()*2)-1;
+		int y = (int)Math.rint(Math.random()*2)-1;
+		return new Point(x,y);
+	}
+
 }

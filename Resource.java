@@ -5,9 +5,9 @@ public class Resource extends Thing
 {
 	// Basic constructor
 	// Additionally we add an intial amount of resource
-	public Resource(String nameValue, int amountValue, Logger debugValue, Ground movesValue)
+	public Resource(String nameValue, int amountValue, Logger debugValue, Ground groundValue)
 	{
-		super(nameValue, debugValue, "resource");
+		super(nameValue, debugValue, GridType.RESOURCE);
 
 		// Set the amount and inital amount.
 		setInitalAmount(amountValue);
@@ -15,7 +15,7 @@ public class Resource extends Thing
 		setAmount(amountValue);
 
 		// We must locate every child class of Thing at the end of the constructor.
-		locate(movesValue);
+		locate(groundValue);
 	}
 
 	// Constructor with x and y values to create a Resource with a specfic location
@@ -23,7 +23,7 @@ public class Resource extends Thing
 	// Additionally we add an intial amount of resource
 	public Resource(int xValue, int yValue, String nameValue, int amountValue, Logger debugValue )
 	{
-		super(nameValue, debugValue, "resource");
+		super(nameValue, debugValue, GridType.RESOURCE);
 
 		// Set the amount and the inital amount.
 		setInitalAmount(amountValue);
