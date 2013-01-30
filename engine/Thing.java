@@ -1,30 +1,35 @@
+package engine;
+
 /*
- * A public class that acts as a base class for all things on the ground.
+ * Public Thing class extends parent class Nothing
+ *
+ * A Thing object represents an object that can be placed
+ * on a cartesian grid.
+ *
+ * This class contains methods to place and move that object as
+ * well as getting random possible movements on a grid.
+ *
+ * This class shouldn't be instantiated directly
  */
+
+import utils.GridType;
 
 public class Thing extends Nothing
 {
-	/*
-	 * Constructors
-	*/
+	/* CONSTUCTORS */
 
-	// Basic constructor, setting name and the debugger
+	// Constructor that calls the parent class constructor and sets
+	// an empty point ready to be initalized correctly by a child class
 	public Thing(String nameValue, Logger debugValue, GridType typeValue)
 	{
 		super(nameValue, typeValue, 2, debugValue);
 		pos = new Point();
 	}
+	/* END CONSTRUCTORS */
 
-	// END Constructors
+	/* PUBLIC */
 
-	/*
-	 * Thing location methods and variables
-	 * set and get x and y coordinates
-	*/
-
-	protected Point pos; // x and y is the positon of the thing on the ground.
-
-	// Choose a starting position for the new thing.
+	// Choose a starting position for the new thing
 	public void locate(Ground movesValue)
 	{
 		// Find a random valid space
@@ -57,17 +62,18 @@ public class Thing extends Nothing
 		pos = new Point(p);
 		debug("setting new position to " + pos.getX() + "," + pos.getY());
 	}
-	// END location methods
+	/* END PUBLIC */
 
-	/*
-	 * Helper methods for a Thing
-	 * Perhaps place these in another helper class, if there's lots.
-	*/
+	/* PROTECTED  */
 
-	// Return a valid random move (method assumes there is one.)
-	protected Point getRandomValidMove(Ground movesValue)
+	protected Point pos;
+
+	// Return a valid random move, where a move is defined by any surrounding
+	// grid sqaure of the current Thing's position
+	// TODO: add function to return if no available move is found
+	protected Point getRandomValidMove(Ground groundValue)
 	{
-
+		// Loop until we find a valid square
 		while(true)
 		{
 			// Get any random step
@@ -82,31 +88,33 @@ public class Thing extends Nothing
 			Point uncheckedMove = step.add(pos);
 
 			// Check the validity of that square
-			if(movesValue.getSpace(uncheckedMove) != null && movesValue.getSpace(uncheckedMove).getType() == GridType.EMPTY)
+			if(groundValue.getSpace(uncheckedMove) != null && groundValue.getSpace(uncheckedMove).getType() == GridType.EMPTY)
 			{
-				// Move is valid
 				return step;
 			}
 		}
 	}
 
 	// Return a valid random board position
-	protected Point getRandomValidSpace(Ground movesValue)
+	// TODO: add function to return if no available space is found
+	protected Point getRandomValidSpace(Ground groundValue)
 	{
-
 		while(true)
 		{
 			// Get any random space
-			Point uncheckedMove = getRandomSpace(movesValue.getX(), movesValue.getY());
+			Point uncheckedMove = getRandomSpace(groundValue.getX(), groundValue.getY());
 
 			// Check the validity of that space
-			if(movesValue.getSpace(uncheckedMove) != null && movesValue.getSpace(uncheckedMove).getType() == GridType.EMPTY)
+			if(groundValue.getSpace(uncheckedMove) != null && groundValue.getSpace(uncheckedMove).getType() == GridType.EMPTY)
 			{
 				// Move is valid
 				return uncheckedMove;
 			}
 		}
 	}
+	/* END PROTECTED*/
+
+	/* PRIVATE*/
 
 	// Returns a valid grid sqaure based on the grid size xValue and yValue
 	private Point getRandomSpace(int xValue, int yValue)
@@ -129,5 +137,5 @@ public class Thing extends Nothing
 		int y = (int)Math.rint(Math.random()*2)-1;
 		return new Point(x,y);
 	}
-
+	/* END PRIVATE */
 }

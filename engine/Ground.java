@@ -1,10 +1,24 @@
+package engine;
+
+/*
+ * public class Ground extends parent class Nothing.
+ * 
+ * The ground is essentially a 2D array of Nothing objects
+ * and forms the basis of the grid that all objects are placed
+ * on.
+ *
+ */
+
+import utils.GridType;
+
 public class Ground extends Nothing
 {
-	private final int x;
-	private final int y;
 
-	private Nothing[][] ground;
+	/* CONSTUCTORS */
 
+	// Uses x and y values to create the grid, and passes the other parameters
+	// to the parent class constructor
+	// Once created, we clear the grid
 	public Ground(int xValue, int yValue, String nameValue, Logger debugValue)
 	{
 		super(nameValue, GridType.GROUND, 3, debugValue);
@@ -15,8 +29,11 @@ public class Ground extends Nothing
 		clearGround();
 		debug("Created empty ground with dimensions: " + xValue + "," + yValue);
 	}
+	/* END CONSTRUCTORS */
 
-	// Fill the ground array with empty objects.
+	/* PUBLIC */
+
+	// Clear every space in the grid
 	public void clearGround()
 	{
 		debug("Clearing ground");
@@ -29,7 +46,7 @@ public class Ground extends Nothing
 		}
 	}
 
-	// Need to pass coordinates as we are using two different coordinate systems
+	// fill the given space with the given Thing
 	public boolean fillSpace(Thing thingValue, int xValue, int yValue)
 	{
 		if(ground[xValue][yValue].getType() == GridType.EMPTY)
@@ -45,11 +62,13 @@ public class Ground extends Nothing
 		}
 	}
 
+	// fill the given space with the given Thing
 	public boolean fillSpace(Thing thingValue, Point pValue)
 	{
 		return fillSpace(thingValue, pValue.getX(), pValue.getY());
 	}
 
+	// Set the given space to empty
 	public void clearSpace(int xValue, int yValue)
 	{
 		if(ground[xValue][yValue] == null || ground[xValue][yValue].getType() != GridType.EMPTY)
@@ -63,22 +82,28 @@ public class Ground extends Nothing
 		}
 	}
 
+	// Set the given space to empty
 	public void clearSpace(Point pValue)
 	{
 		clearSpace(pValue.getX(), pValue.getY());
 	}
 
+	// Set the given space to blocked,
+	// i.e. it lies outside the grid
 	public void blockSpace(int xValue, int yValue)
 	{
 		ground[xValue][yValue] = null;
 		debug("Blocked space " + xValue + "," + yValue);
 	}
 
+	// Set the given space to blocked,
+	// i.e. it lies outside the grid
 	public void blockSpace(Point pValue)
 	{
 		blockSpace(pValue.getX(), pValue.getY());
 	}
-
+	
+	// return the Nothing object that is found at the given x and y values
 	public Nothing getSpace(int xValue, int yValue) 
 	{	
 		try
@@ -91,6 +116,7 @@ public class Ground extends Nothing
 		}
 	}
 
+	// return the Nothing object that is found at the given point
 	public Nothing getSpace(Point pValue)
 	{
 		return getSpace(pValue.getX(), pValue.getY());
@@ -106,14 +132,14 @@ public class Ground extends Nothing
 		return y;
 	}
 
-	// Method should not be allowed to pass a point
-	// that holds an empty space. It has to be a Thing. 
+	// Move the Object that is placed in a grid square to a the new 
+	// grid square, which will be already updated in it's object.
+	// Then clear the old space
 	public void moveSpace(Point oldSpaceValue, Point newSpaceValue)
 	{
-		// Check the type of the Nothing Object, If it is
-		// not a Thing then throw an exception
 		Nothing castableNothing = getSpace(oldSpaceValue);
 
+		// If it's not castable then output the debug info
 		if(castableNothing.getType() == GridType.EMPTY)
 		{
 			debug("Nothing: " + castableNothing.getName() + " cannot be cast as a Thing. Found " + castableNothing.getType());
@@ -131,6 +157,8 @@ public class Ground extends Nothing
 		}
 	}
 
+	// A debugging method to output any important Objects placed on the grid.
+	// i.e. This method ignores Nothing Objects.
 	public void debugGround()
 	{
 		System.out.println("****Printing Grid****");
@@ -148,4 +176,15 @@ public class Ground extends Nothing
 		}
 		System.out.println("****Printed Grid****");
 	}	
+	/* END PUBLIC */
+
+	/* PROTECTED  */
+	/* END PROTECTED*/
+
+	/* PRIVATE*/
+
+	private final int x; // the width of the grid in squares
+	private final int y; // the height of the grid in squares
+	private Nothing[][] ground; // The 2D array of objects that make up the grid
+	/* END PRIVATE */
 }

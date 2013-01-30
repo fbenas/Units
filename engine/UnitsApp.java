@@ -2,6 +2,8 @@
  * Main applciation for Units
  */
 
+package engine;
+
 public class UnitsApp
 {
 	// Application wide vars
@@ -14,9 +16,10 @@ public class UnitsApp
 	private int resourceAmount = 10000;
 	private int gameTime = 1000;
 	private Ground ground;
-
+	private Crumb[][] crumbs;
 	// This must be set up, either true or false.
 	private Logger debugger;
+
 	public UnitsApp(int runtimeLevelValue)
 	{
 		debugger = new Logger(runtimeLevelValue);
@@ -44,18 +47,22 @@ public class UnitsApp
 		ground = new Ground(groundX,groundY,"Ground",debugger);
 		debug("Deployment","Ground " + ground.getName() + " created with size of " + ground.getX() + "," + ground.getY());
 
-		debug("Deployment", "Creating a Home");	
+		debug("Deployment","Creating Crumb Array");
+		crumbs = new Crumb[groundX][groundY];
+		debug("Deployment", "Crumb Array Created with size " + groundX + "," + groundY);
+		
+		debug("Deployment", "Creating a Home");
 		Home home = new Home(200,200,"H", debugger);
 		ground.fillSpace(home, home.getPos());
 		debug("Deployment", "Home, " + home.getName() + " created at " + home.getX() + "," + home.getY());	
 
-		debug("Deployment", "Creating a Unit from home " + home.getName());		
+		debug("Deployment", "Creating a Unit from home " + home.getName());
 		Unit unit = home.spawnUnit("unit", ground);
 		ground.fillSpace(unit, unit.getPos());
 		//Unit unit = new Unit(randomPoint.getX(), randomPoint.getY(), "U",home, debugger);
 		debug("Deployment", "Unit, " + unit.getName() + " created at " + unit.getX() + "," + unit.getY());
 
-		debug("Deployment", "Creating a Resource");	
+		debug("Deployment", "Creating a Resource");
 		Resource resource = new Resource(203,203,"R",resourceAmount,debugger);
 		debug("Deployment", "Resource, " + resource.getName() + " created at " + resource.getX() + "," + resource.getY());
 
@@ -106,6 +113,9 @@ public class UnitsApp
 					moveUnitHome(unit);
 				}
 			}
+
+			debug("Main Loop", "Decaying all crumbs");
+			decayCrumbs();
 		}
 		debug("Main Loop", "Game Time Expired.");
 		debug("UnitsApp","Resource, " + resource.getName() + ", ended with an amount of: " + resource.getAmount());
@@ -120,6 +130,27 @@ public class UnitsApp
 	{
 		// Find an empty space on the grid.
 		return new Point(201,201);
+	}
+
+	private void decayCrumbs()
+	{
+		for(Crumb[] cc : crumbs)
+		{
+			for(Crumb c : cc)
+			{
+				if(c != null )
+				{
+					for(int i = 0; i < 3; i++)
+					{
+						int x = c.getWeight(i);
+						if (x > 0)
+						{
+							c.setWeight(i,x-1);
+						}
+					}
+				}
+			}
+		}
 	}
 
 	private void debug(String name, String value)
@@ -151,5 +182,8 @@ public class UnitsApp
 		
 		// Update grid
 		ground.moveSpace(p,unitValue.getPos());
+
+		// Add a crumb to the ground
+		Crumb crumb = new Crumb(5, unitValue.getPos());
 	}
 }
