@@ -8,5 +8,5 @@ package utils;
 
 public enum GridType
 {
-	EMPTY, HOME, RESOURCE, UNIT, GROUND
+    EMPTY, HOME, RESOURCE, UNIT, GROUND
 }
