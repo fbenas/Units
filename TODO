@@ -1,0 +1,10 @@
+TODO
+
+Change the way interactions are done. (Unit.java 115)
+
+Fix calls to base methods etc. so someParentMethod() becomes super.someParentMethod()
+
+Look at todo's in code
+
+Set up a static class for system wide variables
+Possibly use a config file for this.
