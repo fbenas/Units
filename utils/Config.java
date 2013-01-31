@@ -15,8 +15,8 @@ public class Config
 
     public Config(int debugLevelValue)
     {
-        GRID_WIDTH = 400;
-        GRID_HEIGHT = 400;
+        GRID_WIDTH = 40;
+        GRID_HEIGHT = 40;
         RESOURCE_AMOUNT = 100;
         CARRY_AMOUNT = 10;
         GAME_TIME = 1000;

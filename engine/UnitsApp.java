@@ -5,6 +5,7 @@
 package engine;
 
 import utils.Config;
+import frontend.FrontEnd;
 
 public class UnitsApp
 {
@@ -45,6 +46,8 @@ public class UnitsApp
     private Ground ground;
     private Crumb[][] crumbs;
     private Config config;
+    private FrontEnd frontEnd;
+
     // Main game loop method
     private void go()
     {
@@ -57,7 +60,7 @@ public class UnitsApp
         debug("Deployment", "Crumb Array Created with size " + config.GRID_WIDTH + "," + config.GRID_HEIGHT);
         
         debug("Deployment", "Creating a Home");
-        Home home = new Home(200,200,"H", config);
+        Home home = new Home(5,5,"H", config);
         ground.fillSpace(home, home.getPos());
         debug("Deployment", "Home, " + home.getName() + " created at " + home.getX() + "," + home.getY());    
 
@@ -67,8 +70,14 @@ public class UnitsApp
         debug("Deployment", "Unit, " + unit.getName() + " created at " + unit.getX() + "," + unit.getY());
 
         debug("Deployment", "Creating a Resource");
-        Resource resource = new Resource(203,203,"R",config.RESOURCE_AMOUNT,config);
+        Resource resource = new Resource(10,10,"R",config.RESOURCE_AMOUNT,config);
+        ground.fillSpace(resource, resource.getPos());
         debug("Deployment", "Resource, " + resource.getName() + " created at " + resource.getX() + "," + resource.getY());
+
+        // ANIMATION CODE
+        frontEnd = new FrontEnd(40,40,false,ground.convert());
+        threadWait();
+        // END ANIMATION CODE
 
         int i = 0;
         while( i < config.GAME_TIME )
@@ -117,6 +126,11 @@ public class UnitsApp
                     moveUnitHome(unit);
                 }
             }
+
+            // ANIMATION CODE
+            frontEnd.updateGrid(ground.convert());
+            threadWait();
+            // END ANIMATION CODE
 
             debug("Main Loop", "Decaying all crumbs");
             decayCrumbs();
@@ -187,6 +201,18 @@ public class UnitsApp
 
         // Add a crumb to the ground
         Crumb crumb = new Crumb(5, unitValue.getPos());
+    }
+
+    private void threadWait()
+    {
+        try
+        {
+            Thread.currentThread().sleep(10);
+        }
+        catch( Exception e)
+        {
+            System.out.println(e);
+        }
     }
     /* END PRIVATE */
 }

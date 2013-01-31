@@ -177,6 +177,22 @@ public class Ground extends Nothing
         }
         System.out.println("****Printed Grid****");
     }    
+
+    // Method converts the 2D array of Nothing objects to a 2D array
+    // of GridTypes, using each Nothing's gridType.
+    // Method is used to pass to the front end for animation
+    public GridType[][] convert()
+    {
+        GridType[][] newGrid = new GridType[x][y];
+        for(int i=0; i<x; i++)
+        {
+            for(int j=0; j<y; j++)
+            {
+                newGrid[i][j] = ground[i][j].getType();
+            }
+        }
+        return newGrid;
+    }
     /* END PUBLIC */
 
     /* PROTECTED  */
