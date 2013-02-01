@@ -11,5 +11,5 @@ public interface Move
     // A Ground object, containing the contents of a grid
     // is passed as a parameter so the object has perception
     // of the grid that it resides in.
-    public abstract boolean move(Ground groundValue);
+    public abstract boolean move(Space[][] gridSpaceValue);
 }

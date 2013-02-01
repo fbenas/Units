@@ -25,12 +25,12 @@ public class Resource extends Thing
     // A constuctor to set the inital amount of resource using amountValue
     // and to place the Resource in a random, valid position on the grid
     // The other parameters are used to call the parent constuctor.
-    public Resource(String nameValue, int amountValue, Config configValue, Ground groundValue)
+    public Resource(String nameValue, int amountValue, Config configValue, Space[][] gridSpaceValue)
     {
         super(nameValue, configValue, GridType.RESOURCE); // call parent constuctor
         setInitalAmount(amountValue); // Set the inital amount
         setAmount(amountValue); // Set the current amount
-        locate(groundValue); // Spawn the Resource on the grid at a random valid position
+        locate(gridSpaceValue); // Spawn the Resource on the grid at a random valid position
     }
 
     // A constuctor to set the inital amount of resource using amountValue

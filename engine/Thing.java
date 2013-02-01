@@ -31,10 +31,10 @@ public class Thing extends Nothing
     /* PUBLIC */
 
     // Choose a starting position for the new thing
-    public void locate(Ground movesValue)
+    public void locate(Space[][] gridSpaceValue)
     {
         // Find a random valid space
-        setPos(getRandomValidSpace(movesValue));
+        setPos(getRandomValidSpace(gridSpaceValue));
     }
 
     public int getX()
@@ -71,8 +71,7 @@ public class Thing extends Nothing
 
     // Return a valid random move, where a move is defined by any surrounding
     // grid sqaure of the current Thing's position
-    // TODO: add function to return if no available move is found
-    protected Point getRandomValidMove(Ground groundValue)
+    protected Point getRandomValidMove(Space[][] gridSpaceValue)
     {
         // Loop until we find a valid square
         while(true)
@@ -80,7 +79,7 @@ public class Thing extends Nothing
             // Get any random step
             Point step = getRandomMove();
 
-            // Check that the move is not 0,0
+            // Check that the move is not 0,0 REMOVE THIS WHEN WE USE CRUMBS
             if(step.getX() == 0 && step.getY() == 0)
             {
                 continue;
@@ -88,8 +87,13 @@ public class Thing extends Nothing
             // Add the current pos to the step to get our prospective position
             Point uncheckedMove = step.add(pos);
 
-            // Check the validity of that square
-            if(groundValue.getSpace(uncheckedMove) != null && groundValue.getSpace(uncheckedMove).getType() == GridType.EMPTY)
+            // Check the validity of that space
+            if( uncheckedMove.getX() >= 0 
+                && uncheckedMove.getX() < config.GRID_WIDTH
+                && uncheckedMove.getY() >= 0 
+                && uncheckedMove.getY() < config.GRID_HEIGHT
+                && gridSpaceValue[uncheckedMove.getX()][uncheckedMove.getY()].getThing().getType() != GridType.HOME 
+                && gridSpaceValue[uncheckedMove.getX()][uncheckedMove.getY()].getThing().getType() != GridType.RESOURCE)
             {
                 return step;
             }
@@ -97,18 +101,17 @@ public class Thing extends Nothing
     }
 
     // Return a valid random board position
-    // TODO: add function to return if no available space is found
-    protected Point getRandomValidSpace(Ground groundValue)
+    protected Point getRandomValidSpace(Space[][] gridSpaceValue)
     {
         while(true)
         {
             // Get any random space
-            Point uncheckedMove = getRandomSpace(groundValue.getX(), groundValue.getY());
+            Point uncheckedMove = getRandomSpace(config.GRID_WIDTH, config.GRID_HEIGHT);
 
             // Check the validity of that space
-            if(groundValue.getSpace(uncheckedMove) != null && groundValue.getSpace(uncheckedMove).getType() == GridType.EMPTY)
+            if( gridSpaceValue[uncheckedMove.getX()][uncheckedMove.getY()].getThing().getType() != GridType.HOME 
+                && gridSpaceValue[uncheckedMove.getX()][uncheckedMove.getY()].getThing().getType() != GridType.RESOURCE)
             {
-                // Move is valid
                 return uncheckedMove;
             }
         }

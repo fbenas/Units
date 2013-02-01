@@ -16,6 +16,7 @@ package engine;
  */
 
 import utils.GridType;
+import utils.Config;
 
 public class Crumb
 {
@@ -24,8 +25,9 @@ public class Crumb
     // A consructor to create a Crumb class and add one 
     // set of weight and nextMove values to the array
     // ssing a Point object to describe the position.
-    public Crumb(int weightValue, Point nextMoveValue)
+    public Crumb(int weightValue, Point nextMoveValue, Config configValue)
     {
+		config = configValue;
         weight = new int[3]; // Max size of 3
         nextMove = new Point[3]; // Max size of 3
         addCrumb(weightValue, nextMoveValue); // Add the crumb
@@ -45,7 +47,7 @@ public class Crumb
     /* PUBLIC */
 
     // Set the nextMove value of the specfied element in the array
-    public void    setNextMove(int indexValue, Point nextMoveValue)
+    public void setNextMove(int indexValue, Point nextMoveValue)
     {
         // Check the specfied index is valid; 0 <= index < 3
         if(indexValue < 3 && indexValue >= 0)
@@ -155,5 +157,6 @@ public class Crumb
 
     private int[] weight; // The strength of the pheramone or crumb
     private Point[] nextMove; // The next grid square
+	private Config config;
     /* END PRIVATE */
 }

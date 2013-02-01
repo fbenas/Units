@@ -5,7 +5,10 @@
 package engine;
 
 import utils.Config;
+import utils.AnimObject;
+import utils.GridType;
 import frontend.FrontEnd;
+import java.util.ArrayList;
 
 public class UnitsApp
 {
@@ -15,7 +18,7 @@ public class UnitsApp
     public UnitsApp(int runtimeLevelValue)
     {   
         config = new Config(runtimeLevelValue);
-        go();
+        gogo();
 
     }
     /* END CONSTRUCTORS */
@@ -43,98 +46,85 @@ public class UnitsApp
 
     /* PRIVATE*/
     private int debugLevel = 1; // debug level for this class
-    private Ground ground;
-    private Crumb[][] crumbs;
     private Config config;
     private FrontEnd frontEnd;
 
-    // Main game loop method
-    private void go()
+    private Space[][] gridSpace;
+    private ArrayList<Unit> unitArray = new ArrayList<Unit>();
+    // new main loop using space
+    private void gogo()
     {
-        debug("Deployment","Creating main Ground");
-        ground = new Ground(config.GRID_WIDTH,config.GRID_HEIGHT,"Ground",config);
-        debug("Deployment","Ground " + ground.getName() + " created with size of " + ground.getX() + "," + ground.getY());
+        //Set up the space[]
+        gridSpace = new Space[config.GRID_WIDTH][config.GRID_HEIGHT];
+        initaliseSpace();
+        initaliseHomes();
+        initaliseResources();
+        spawnUnits();
 
-        debug("Deployment","Creating Crumb Array");
-        crumbs = new Crumb[config.GRID_WIDTH][config.GRID_HEIGHT];
-        debug("Deployment", "Crumb Array Created with size " + config.GRID_WIDTH + "," + config.GRID_HEIGHT);
-        
-        debug("Deployment", "Creating a Home");
-        Home home = new Home(5,5,"H", config);
-        ground.fillSpace(home, home.getPos());
-        debug("Deployment", "Home, " + home.getName() + " created at " + home.getX() + "," + home.getY());    
-
-        debug("Deployment", "Creating a Unit from home " + home.getName());
-        Unit unit = home.spawnUnit("unit", ground);
-        ground.fillSpace(unit, unit.getPos());
-        debug("Deployment", "Unit, " + unit.getName() + " created at " + unit.getX() + "," + unit.getY());
-
-        debug("Deployment", "Creating a Resource");
-        Resource resource = new Resource(10,10,"R",config.RESOURCE_AMOUNT,config);
-        ground.fillSpace(resource, resource.getPos());
-        debug("Deployment", "Resource, " + resource.getName() + " created at " + resource.getX() + "," + resource.getY());
-
-        // ANIMATION CODE
-        frontEnd = new FrontEnd(40,40,false,ground.convert());
-        threadWait();
-        // END ANIMATION CODE
-
-        int i = 0;
-        while( i < config.GAME_TIME )
+        if(config.ANIM_FLAG)
         {
-            debug("Main Loop", "Time = " + i);
-            i++;
-            // Check if unit is carrying a load
-            if( unit.getCarry() == 0 )
+            frontEnd = new FrontEnd(config, convertForAnim());
+            threadWait();
+        }
+
+        int counter = 0;
+
+        while(counter < config.GAME_TIME)
+        {
+            counter++;
+            // decay all crumbs
+            decayCrumbs();
+            // for each unit, make a move
+            for(Unit u : unitArray)
             {
-                debug("Main Loop", "Unit, " + unit.getName()  + ", is carrying nothing");
-                if( unit.canInteract(new Point(resource.getPos())) )
+                if(u.getCarry()>0) // check if unit is carrying
                 {
-                    debug("Main Loop", "Unit, " + unit.getName()  + ", is in proximty of a resource");
-                    if(resource.getAmount() > 0)
+                    if(isNearHome(u)) // Check if unit can interact with a home
                     {
-                        debug("Main Loop", "Unit, " + unit.getName()  + ", has picked up a load");
-                        unit.setCarry(config.CARRY_AMOUNT);
-                        resource.reduceAmount(config.CARRY_AMOUNT);
-                        if(unit.getHistory().size()>0)
-                        {
-                            unit.getHistory().remove(unit.getHistory().size()-1);
-                        }
+                        // interact with home
+                         u.getHome().increaseAmount(u.getCarry());
+                         u.setCarry(0);
+                    }
+                    else
+                    {
+                        // move towards home
+                        moveUnitHome(u);
                     }
                 }
-                else
+                else 
                 {
-                    // Move Randomly
-                    debug("Main Loop", "Unit, " + unit.getName()  + ", will make a random move");
-                    moveUnit(unit);
-                    debug("Main Loop","Unit, " + unit.getName() + " has made a move, and grid is up-to-date");
+                    Resource r = isNearResource(u);
+                    if(r != null) // check if unit can interact with a resource
+                    {
+                        if(r.getAmount() > 0) // check if the resource has stock
+                        {
+                            u.setCarry(config.CARRY_AMOUNT);
+                            r.reduceAmount(config.CARRY_AMOUNT);
+                            if(u.getHistory().size()>0)
+                            {
+                                u.getHistory().remove(u.getHistory().size()-1);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // move ranomly...
+                        moveUnit(u);
+                    }
                 }
             }
-            else
+
+            // update animation
+            if(config.ANIM_FLAG)
             {
-                debug("Main Loop", "Unit, " + unit.getName()  + ", is carrying a load");
-                if ( unit.canInteract(new Point(unit.getHome().getPos())) )
-                {
-                    debug("Main Loop", "Unit, " + unit.getName()  + ", is in proximty of its home");
-                    unit.getHome().increaseAmount(unit.getCarry());
-                    unit.setCarry(0);
-                    debug("Main Loop", "Unit" + unit.getName() + ", has dropped it's load at home.");
-                }
-                else
-                {
-                    debug("Main Loop", "Unit, " + unit.getName()  + ", will move toward home. " + unit.getHistory().size() + " moves left" );
-                    moveUnitHome(unit);
-                }
+                frontEnd.updateGrid(convertForAnim());
+                threadWait();
             }
-
-            // ANIMATION CODE
-            frontEnd.updateGrid(ground.convert());
-            threadWait();
-            // END ANIMATION CODE
-
-            debug("Main Loop", "Decaying all crumbs");
-            decayCrumbs();
         }
+
+        Resource resource = (Resource) gridSpace[10][10].getThing();
+        Home home = (Home) gridSpace[5][5].getThing();
+        Unit unit = unitArray.get(0);
         debug("Main Loop", "Game Time Expired.");
         debug("UnitsApp","Resource, " + resource.getName() + ", ended with an amount of: " + resource.getAmount());
         debug("UnitsApp","Home, " + home.getName() + ", ended with an amount of: " + home.getAmount());
@@ -142,33 +132,104 @@ public class UnitsApp
         debug("UnitsApp","Exiting.");
     }
 
-    // Only use this for debugging 
-    // TODO: use functions in Thing class.
-    private Point getRandomValidGridPos(Thing thing)
+    private boolean isNearHome(Unit unitValue)
     {
-        return new Point(201,201);
+        Point u = unitValue.getPos();
+        Point h = unitValue.getHome().getPos();
+
+        if(Math.abs(u.getX()-h.getX()) < 2 && Math.abs(u.getY()-h.getY()) < 2)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private Resource isNearResource(Unit unitValue)
+    {
+        
+        for(int i=-1; i<2; i++)
+        {
+            for(int j=-1; j<2; j++)
+            {
+                try
+                {
+                    Resource r = (Resource)gridSpace[unitValue.getX()+i][unitValue.getY()+j].getThing();
+                    if(r.getAmount() >= config.CARRY_AMOUNT)
+                    {
+                        return r;
+                    }
+                }
+                catch (Exception e)
+                {
+                    return null;
+                }
+            }
+        }
+        return null;
+    }
+
+    private AnimObject[][] convertForAnim()
+    {
+        AnimObject[][] anim = new AnimObject[config.GRID_WIDTH][config.GRID_HEIGHT];
+        for(int i=0; i<config.GRID_WIDTH; i++)
+        {
+            for(int j=0; j<config.GRID_WIDTH; j++)
+            {
+                anim[i][j] = new AnimObject(gridSpace[i][j].getThing().getType(),gridSpace[i][j].getWeights());
+            }
+        }
+        return anim;
+    }
+
+    private void spawnUnits()
+    {
+        Home h = (Home)(gridSpace[5][5].getThing());
+        unitArray.add(h.spawnUnit("U1",gridSpace));
+        placeUnits();
+    }
+
+    private void placeUnits()
+    {
+        for(Unit u : unitArray)
+        {
+            gridSpace[u.getX()][u.getY()].setThing(u);
+        }
+    }
+
+    private void initaliseHomes()
+    {
+        gridSpace[5][5].setThing((Thing) new Home(5,5,"H1", config));
+    }
+
+    private void initaliseResources()
+    {
+        gridSpace[10][10].setThing((Thing)(new Resource(10,10,"R1",config.RESOURCE_AMOUNT,config)));
+    }
+
+    private void initaliseSpace()
+    {
+        for(int i=0; i < config.GRID_WIDTH; i++)
+        {
+            for(int j=0; j< config.GRID_HEIGHT; j++)
+            {
+                gridSpace[i][j] = new Space(config);
+            }
+        }
     }
     
     // Iterate through the array of crumbs and remove 1 to all the weightings
     private void decayCrumbs()
     {
-        for(Crumb[] cc : crumbs)
-        {
-            for(Crumb c : cc)
+       for(Space[] gridRow : gridSpace)
+       {
+            for(Space s : gridRow)
             {
-                if(c != null )
-                {
-                    for(int i = 0; i < 3; i++)
-                    {
-                        int x = c.getWeight(i);
-                        if (x > 0)
-                        {
-                            c.setWeight(i,x-1);
-                        }
-                    }
-                }
+                s.decayWeights();
             }
-        }
+       }
     }
 
     private void debug(String nameValue, String value)
@@ -182,10 +243,10 @@ public class UnitsApp
         Point p = new Point(unitValue.getPos());
 
         // Move unit
-        unitValue.move(ground);
+        unitValue.move(gridSpace);
         
         // Update grid
-        ground.moveSpace(p,unitValue.getPos());
+        moveSpace(p,unitValue.getPos());
     }
 
     private void moveUnitHome(Unit unitValue)
@@ -197,21 +258,50 @@ public class UnitsApp
         unitValue.moveHome();
         
         // Update grid
-        ground.moveSpace(p,unitValue.getPos());
+        moveSpace(p,unitValue.getPos());
 
         // Add a crumb to the ground
-        Crumb crumb = new Crumb(5, unitValue.getPos());
+        if(config.LEARN_FLAG)
+        {
+            Crumb crumb = new Crumb(5, unitValue.getPos(), config);
+        }
     }
 
     private void threadWait()
     {
         try
         {
-            Thread.currentThread().sleep(10);
+            Thread.currentThread().sleep(config.GAME_DELAY);
         }
         catch( Exception e)
         {
             System.out.println(e);
+        }
+    }
+
+	private int[][] convertCrumbs()
+	{
+		return new int[config.GRID_WIDTH][config.GRID_HEIGHT];
+	}
+
+    private void moveSpace(Point oldSpaceValue, Point newSpaceValue)
+    {
+        Nothing castableNothing = gridSpace[oldSpaceValue.getX()][oldSpaceValue.getY()].getThing();
+
+        // If it's not castable then output the debug info
+        if(castableNothing.getType() == GridType.EMPTY)
+        {
+            debug("MoveSpace","Nothing: " + castableNothing.getName() + " cannot be cast as a Thing. Found " + castableNothing.getType());
+            debug("MoveSpace","Exiting...");
+            System.exit(1);
+        }
+        else
+        {
+            Thing thingToMove = (Thing)castableNothing;
+            // Clear the old space
+            gridSpace[oldSpaceValue.getX()][oldSpaceValue.getY()].setThing(new Nothing(config));
+            // fill the new space with the Thing.
+            gridSpace[newSpaceValue.getX()][newSpaceValue.getY()].setThing(thingToMove);
         }
     }
     /* END PRIVATE */

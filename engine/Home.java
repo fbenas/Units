@@ -23,10 +23,10 @@ public class Home extends Thing
     // Constructor to randomly place a Home on the grid provided in grounValue
     // The nameValue and configValue parameters are passed to the parent class's
     // constructor
-    public Home(String nameValue, Config configValue, Ground groundValue)
+    public Home(String nameValue, Config configValue, Space[][] gridSpaceValue)
     {
         super(nameValue, configValue, GridType.HOME); // Call the parent constructor
-        locate(groundValue); // Position the Home randomly on the grid.
+        locate(gridSpaceValue); // Position the Home randomly on the grid.
     }
 
     // Constructor to place a Home on the grid provided in grounValue
@@ -59,9 +59,9 @@ public class Home extends Thing
     }
 
     // Spawn a unit one valid move away from the Home's location
-    public Unit spawnUnit(String nameValue, Ground groundValue)
+    public Unit spawnUnit(String nameValue, Space[][] gridSpaceValue)
     {
-        Point p = getRandomValidMove(groundValue); // Get a random move
+        Point p = getRandomValidMove(gridSpaceValue); // Get a random move
         return new Unit(p.getX(),p.getY(),nameValue,this,config); // return the new Unit
     }
 

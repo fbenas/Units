@@ -10,8 +10,6 @@ package engine;
  * 
  * The unit interacts with home and resource objects, taking an amount
  * of resource from the latter and drops it off at the former.
- *
- * TODO: make units follow crumbs to a resource.
  */
 
 import java.util.ArrayList;
@@ -41,28 +39,11 @@ public class Unit extends Thing implements Move
     // Overrides the move method from the Move interface
     // Get a valid random move and log the move
     @Override
-    public boolean move(Ground groundValue)
+    public boolean move(Space[][] gridSpaceValue)
     {
         debug("moving...");
-
-        Point p = getRandomValidMove(groundValue);
-        setPos(p);
-        logLocation();
-        debug("move made.");
-        return true;
-    }
-
-    // Overloaded method to move based on crumbs on the grid
-    // TODO: finish this
-    public boolean move(Ground groundValue, Crumb[][] crumbs)
-    {
-        debug("moving...");
-
-        /* Crumb Specfic Code */
-        //Check curren square for crumb
-        int[] crumbWeights = crumbs[getX()][getY()].getCrumbs();
-        
-        Point p = getRandomValidMove(groundValue);
+      
+        Point p = getRandomValidMove(gridSpaceValue);
         setPos(p);
         logLocation();
         debug("move made.");
@@ -88,49 +69,6 @@ public class Unit extends Thing implements Move
             outputHistory();
             System.out.println("FAILED AGAIN");
             System.exit(1);
-        }
-    }
-
-    // Check if there is a resource in a surrounding sqaure from 
-    // the Unit's current location
-    // TODO: work out which interact method is better
-    public boolean canInteract(Ground groundValue)
-    {
-        for(int i=-1; i<2; i++)
-        {
-            for(int j=-1; j<2; j++)
-            {
-                try
-                {
-                    Resource r = (Resource)groundValue.getSpace(i,j);
-                    if(r.getAmount() >= config.CARRY_AMOUNT)
-                    {
-                        return true;
-                    }
-                }
-                catch (NullPointerException e)
-                {
-                    // do nothing
-                }
-            }
-        }
-        return false;
-    }
-
-    // Check if there is a resource in a surrounding sqaure from 
-    // the Unit's current location
-    // TODO: work out which interact method is better
-    public boolean canInteract(Point pValue)
-    {
-        Point p = new Point(pValue);
-        p.sub(getPos());
-        if(Math.abs(p.getX()) < 2 && Math.abs(p.getY()) < 2)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
         }
     }
 

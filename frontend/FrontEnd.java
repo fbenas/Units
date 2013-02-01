@@ -9,7 +9,9 @@ package frontend;
  */
 
 import utils.GridType;
+import utils.AnimObject;
 import javax.swing.JFrame;
+import utils.Config;
 
 public class FrontEnd
 {
@@ -17,30 +19,23 @@ public class FrontEnd
     /* CONSTUCTORS */
 
     // Constructor to create the grid
-    public FrontEnd(int gridXValue, int gridYValue, boolean drawGridValue, GridType[][] gridValue)
+    public FrontEnd(Config configValue, AnimObject[][] gridContentsValue)
     {
-        gridContents = gridValue;
-        gridX = gridXValue;
-        gridY = gridYValue;
-        drawGrid = drawGridValue;
-        //createGridContents(); // USED FOR DEBUGGING
+        gridContents = gridContentsValue;
+		config = configValue;
+        gridX = config.GRID_WIDTH;
+        gridY = config.GRID_HEIGHT;
+        drawGrid = config.DRAW_GRID_FLAG;
         createGUI();
     }
     /* END CONSTRUCTORS */
 
     /* PUBLIC */
 
-/*
-    public static void main(String[] args)
-    {
-        new FrontEnd(40,40,true);
-    }
-*/ // USED FOR DEBUGGING
-
     // Public method to allow for external updating of the grid.
-    public void updateGrid(GridType[][] gridValue)
+    public void updateGrid(AnimObject[][] gridContentsValue)
     {
-        gridContents = gridValue;
+        gridContents = gridContentsValue;
         gui.redraw(gridContents);
     }
     /* END PUBLIC */
@@ -52,33 +47,18 @@ public class FrontEnd
 
     private int gridX;
     private int gridY;
-    private GridType[][] gridContents;
+    private AnimObject[][] gridContents;
     private boolean drawGrid;
     private JFrame mainFrame;
     private DrawGUI gui;
-
-    // Insantaite the int[][] and fill it with "EMPTY" values
-    private void createGridContents()
-    {
-        gridContents = new GridType[gridX][gridY];
-        for(int i =0; i<gridX; i++)
-        {
-            for(int j =0; j<gridY; j++)
-            {
-                gridContents[i][j] = GridType.EMPTY;
-            }
-        }
-        gridContents[3][3] = GridType.HOME;
-        gridContents[30][30] = GridType.RESOURCE;
-        gridContents[4][4] = GridType.UNIT;
-    }
+	private Config config;
 
     // Private method to allow for creating of the Graphical user Interface
     // This will contain everything but the contents of the grid
     private void createGUI()
     {
         mainFrame = new JFrame("Units");
-        gui = new DrawGUI(gridX,gridY, 20, drawGrid, gridContents);
+        gui = new DrawGUI(config, gridContents);
 
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.add(gui);
