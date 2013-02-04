@@ -15,18 +15,21 @@ public class Config
 
     public Config(int debugLevelValue)
     {
-        LEARN_FLAG = false;
+        MAX_CRUMB_AMOUNT = 100000;//4000;
+        DECAY_AMOUNT = 80;//130;
+        CRUMB_AMOUNT = 2500;//2800;
+        LEARN_FLAG = true;
         ANIM_FLAG = false;
-		GAME_DELAY = 0;
+		GAME_DELAY = 20;
 		PANEL_X = 900;
 		PANEL_Y = 900;
-		SQUARE_WIDTH = 20;
-		DRAW_GRID_FLAG = false;
-        GRID_WIDTH = 40;
-        GRID_HEIGHT = 40;
-        RESOURCE_AMOUNT = 100;
+		SQUARE_WIDTH = 60;
+		DRAW_GRID_FLAG = true;
+        GRID_WIDTH = 10;
+        GRID_HEIGHT = 10;
+        RESOURCE_AMOUNT = 1000000;
         CARRY_AMOUNT = 10;
-        GAME_TIME = 1000000;
+        GAME_TIME = 250000;
         DEBUG = new Logger(debugLevelValue);
         DEBUG.debug("Config", "Debugger set with debugging value of " + debugLevelValue, 1); 
     }
@@ -40,6 +43,10 @@ public class Config
 
     /* PRIVATE*/
 
+    public final int MAX_CRUMB_AMOUNT;
+    public final int DECAY_AMOUNT;
+    public final int CRUMB_AMOUNT;
+    public final boolean LEARN_FLAG;
     public final boolean ANIM_FLAG;
 	public final int GAME_DELAY;
 	public final int PANEL_X;

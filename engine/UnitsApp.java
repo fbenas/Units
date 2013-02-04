@@ -48,9 +48,9 @@ public class UnitsApp
     private int debugLevel = 1; // debug level for this class
     private Config config;
     private FrontEnd frontEnd;
-
     private Space[][] gridSpace;
     private ArrayList<Unit> unitArray = new ArrayList<Unit>();
+
     // new main loop using space
     private void gogo()
     {
@@ -84,6 +84,7 @@ public class UnitsApp
                         // interact with home
                          u.getHome().increaseAmount(u.getCarry());
                          u.setCarry(0);
+                         u.resetHistory();
                     }
                     else
                     {
@@ -122,8 +123,8 @@ public class UnitsApp
             }
         }
 
-        Resource resource = (Resource) gridSpace[10][10].getThing();
-        Home home = (Home) gridSpace[5][5].getThing();
+        Resource resource = (Resource) gridSpace[9][9].getThing();
+        Home home = (Home) gridSpace[0][0].getThing();
         Unit unit = unitArray.get(0);
         debug("Main Loop", "Game Time Expired.");
         debug("UnitsApp","Resource, " + resource.getName() + ", ended with an amount of: " + resource.getAmount());
@@ -149,22 +150,23 @@ public class UnitsApp
 
     private Resource isNearResource(Unit unitValue)
     {
-        
         for(int i=-1; i<2; i++)
         {
             for(int j=-1; j<2; j++)
             {
-                try
+                int xValue = unitValue.getX();
+                int yValue = unitValue.getY();
+                if(xValue+i> 0 && xValue+i < config.GRID_WIDTH && yValue+j > 0 && yValue+j < config.GRID_HEIGHT)
                 {
-                    Resource r = (Resource)gridSpace[unitValue.getX()+i][unitValue.getY()+j].getThing();
-                    if(r.getAmount() >= config.CARRY_AMOUNT)
+                    Nothing castableNothing = gridSpace[xValue+i][yValue+j].getThing();
+                    if(castableNothing.getType() == GridType.RESOURCE)
                     {
-                        return r;
+                        Resource r = (Resource)castableNothing;
+                        if(r.getAmount() >= config.CARRY_AMOUNT)
+                        {
+                            return r;
+                        }
                     }
-                }
-                catch (Exception e)
-                {
-                    return null;
                 }
             }
         }
@@ -178,7 +180,10 @@ public class UnitsApp
         {
             for(int j=0; j<config.GRID_WIDTH; j++)
             {
-                anim[i][j] = new AnimObject(gridSpace[i][j].getThing().getType(),gridSpace[i][j].getWeights());
+                GridType things = gridSpace[i][j].getThing().getType();
+                int weights = convertCrumbs(i,j);
+                int units = gridSpace[i][j].getUnitCount();
+                anim[i][j] = new AnimObject(things,weights,units);
             }
         }
         return anim;
@@ -186,8 +191,15 @@ public class UnitsApp
 
     private void spawnUnits()
     {
-        Home h = (Home)(gridSpace[5][5].getThing());
+        Home h = (Home)(gridSpace[0][0].getThing());
         unitArray.add(h.spawnUnit("U1",gridSpace));
+        unitArray.add(h.spawnUnit("U2",gridSpace));
+        unitArray.add(h.spawnUnit("U3",gridSpace));
+        unitArray.add(h.spawnUnit("U4",gridSpace));
+        unitArray.add(h.spawnUnit("U5",gridSpace));
+        unitArray.add(h.spawnUnit("U6",gridSpace));
+        unitArray.add(h.spawnUnit("U7",gridSpace));
+        unitArray.add(h.spawnUnit("U8",gridSpace));
         placeUnits();
     }
 
@@ -195,18 +207,18 @@ public class UnitsApp
     {
         for(Unit u : unitArray)
         {
-            gridSpace[u.getX()][u.getY()].setThing(u);
+            gridSpace[u.getX()][u.getY()].addUnit(u);
         }
     }
 
     private void initaliseHomes()
     {
-        gridSpace[5][5].setThing((Thing) new Home(5,5,"H1", config));
+        gridSpace[0][0].setThing((Thing) new Home(0,0,"H1", config));
     }
 
     private void initaliseResources()
     {
-        gridSpace[10][10].setThing((Thing)(new Resource(10,10,"R1",config.RESOURCE_AMOUNT,config)));
+        gridSpace[9][9].setThing((Thing)(new Resource(9,9,"R1",config.RESOURCE_AMOUNT,config)));
     }
 
     private void initaliseSpace()
@@ -246,7 +258,8 @@ public class UnitsApp
         unitValue.move(gridSpace);
         
         // Update grid
-        moveSpace(p,unitValue.getPos());
+        gridSpace[p.getX()][p.getY()].removeUnit(unitValue);
+        gridSpace[unitValue.getX()][unitValue.getY()].addUnit(unitValue);
     }
 
     private void moveUnitHome(Unit unitValue)
@@ -258,12 +271,15 @@ public class UnitsApp
         unitValue.moveHome();
         
         // Update grid
-        moveSpace(p,unitValue.getPos());
+        gridSpace[p.getX()][p.getY()].removeUnit(unitValue);
+        gridSpace[unitValue.getX()][unitValue.getY()].addUnit(unitValue);
 
         // Add a crumb to the ground
         if(config.LEARN_FLAG)
         {
-            Crumb crumb = new Crumb(5, unitValue.getPos(), config);
+            // Our new space should be updated as we are heading backwards
+            // Update the weight of the position of old-new. 
+            gridSpace[unitValue.getX()][unitValue.getY()].addWeight(p.getX()-unitValue.getX()+1,p.getY()-unitValue.getY()+1);
         }
     }
 
@@ -279,30 +295,34 @@ public class UnitsApp
         }
     }
 
-	private int[][] convertCrumbs()
+	private int convertCrumbs(int xValue, int yValue)
 	{
-		return new int[config.GRID_WIDTH][config.GRID_HEIGHT];
+        int total = 0;
+        // Get a weight for the grid position based 
+
+/*
+        total += gridSpace[xValue-1][yValue-1].getWeight(2,2);
+        total += gridSpace[xValue-1][yValue].getWeight(2,1);
+        total += gridSpace[xValue-1][yValue+1].getWeight(2,0);
+        total += gridSpace[xValue][yValue-1].getWeight(1,2);
+        total += gridSpace[xValue][yValue].getWeight(1,1);
+        total += gridSpace[xValue][yValue+1].getWeight(1,2);
+        total += gridSpace[xValue+1][yValue-1].getWeight(0,2);
+        total += gridSpace[xValue+1][yValue].getWeight(0,1);
+        total += gridSpace[xValue+1][yValue+1].getWeight(0,0);
+*/
+        for(int i=0; i<3; i++)
+        {
+            for(int j=0; j<3; j++)
+            {
+                if(xValue+i-1 > 0 && xValue+i-1 < config.GRID_WIDTH && yValue+j-1 > 0 && yValue+j-1 < config.GRID_HEIGHT)
+                {
+                    total += gridSpace[xValue+i-1][yValue+j-1].getWeight(Math.abs(i-2),Math.abs(j-2));
+                }
+            }
+        }
+
+        return total;
 	}
-
-    private void moveSpace(Point oldSpaceValue, Point newSpaceValue)
-    {
-        Nothing castableNothing = gridSpace[oldSpaceValue.getX()][oldSpaceValue.getY()].getThing();
-
-        // If it's not castable then output the debug info
-        if(castableNothing.getType() == GridType.EMPTY)
-        {
-            debug("MoveSpace","Nothing: " + castableNothing.getName() + " cannot be cast as a Thing. Found " + castableNothing.getType());
-            debug("MoveSpace","Exiting...");
-            System.exit(1);
-        }
-        else
-        {
-            Thing thingToMove = (Thing)castableNothing;
-            // Clear the old space
-            gridSpace[oldSpaceValue.getX()][oldSpaceValue.getY()].setThing(new Nothing(config));
-            // fill the new space with the Thing.
-            gridSpace[newSpaceValue.getX()][newSpaceValue.getY()].setThing(thingToMove);
-        }
-    }
     /* END PRIVATE */
 }

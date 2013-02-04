@@ -77,25 +77,33 @@ public class Thing extends Nothing
         while(true)
         {
             // Get any random step
-            Point step = getRandomMove();
+            Point step;
+            if(config.LEARN_FLAG)
+            {
+                step = getWeightedMove(gridSpaceValue[this.getX()][this.getY()].getWeights());
+            }
+            else
+            {
+                step = getRandomMove();
+            }
 
             // Check that the move is not 0,0 REMOVE THIS WHEN WE USE CRUMBS
-            if(step.getX() == 0 && step.getY() == 0)
+            if(step.getX() != 0 || step.getY() != 0)
             {
-                continue;
-            }
-            // Add the current pos to the step to get our prospective position
-            Point uncheckedMove = step.add(pos);
 
-            // Check the validity of that space
-            if( uncheckedMove.getX() >= 0 
-                && uncheckedMove.getX() < config.GRID_WIDTH
-                && uncheckedMove.getY() >= 0 
-                && uncheckedMove.getY() < config.GRID_HEIGHT
-                && gridSpaceValue[uncheckedMove.getX()][uncheckedMove.getY()].getThing().getType() != GridType.HOME 
-                && gridSpaceValue[uncheckedMove.getX()][uncheckedMove.getY()].getThing().getType() != GridType.RESOURCE)
-            {
-                return step;
+                // Add the current pos to the step to get our prospective position
+                Point uncheckedMove = new Point(step.getX() + pos.getX(),step.getY() + pos.getY());
+
+                // Check the validity of that space
+                if( uncheckedMove.getX() >= 0 
+                    && uncheckedMove.getX() < config.GRID_WIDTH
+                    && uncheckedMove.getY() >= 0 
+                    && uncheckedMove.getY() < config.GRID_HEIGHT
+                    && gridSpaceValue[uncheckedMove.getX()][uncheckedMove.getY()].getThing().getType() != GridType.HOME 
+                    && gridSpaceValue[uncheckedMove.getX()][uncheckedMove.getY()].getThing().getType() != GridType.RESOURCE)
+                {
+                    return uncheckedMove;
+                }
             }
         }
     }
@@ -140,6 +148,40 @@ public class Thing extends Nothing
         int x = (int)Math.rint(Math.random()*2)-1;
         int y = (int)Math.rint(Math.random()*2)-1;
         return new Point(x,y);
+    }
+
+    // Returns a move of one ranging from -1,-1 to 1,1 
+    private Point getWeightedMove(int[][] weightsValue)
+    {
+        // sum weights of possible moves
+        int total =0;
+        for(int[] row : weightsValue)
+        {
+            for (int w : row)
+            {
+                total += w;
+            }
+        }
+
+        //fix to stop it just choosing -1-1 all the time.
+        if (total < 50)
+        {
+            return getRandomMove();
+        }
+        int random = (int)Math.rint(Math.random() * total);
+        for(int i=0; i<3; i++)
+        {
+            for(int j=0; j<3; j++)
+            {
+                random -= weightsValue[i][j];
+                if(random <= 0)
+                {
+                    return new Point(i-1,j-1);
+                }
+            }
+        }    
+        return null;
+        // Nothing seems good enough eh?
     }
     /* END PRIVATE */
 }

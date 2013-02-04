@@ -58,13 +58,12 @@ public class DrawGUI extends JPanel
 		{
             for (int j = 0; j < gridHeight; j++)
 			{
-                int screenX;
-                int screenY;
+                int screenX = i*squareWidth+20;
+                int screenY = j*squareWidth+20;
+
        			if(drawGrid) // if we want the grid to show
        			{
 	                g.setColor(Color.BLACK);
-                    screenX = i*squareWidth+20;
-                    screenY = j*squareWidth+20;
 					g.drawRect(screenX,screenY,squareWidth,squareWidth);
 				}
 
@@ -73,28 +72,46 @@ public class DrawGUI extends JPanel
                 {
                     case EMPTY: // Empty first as it is most common
                         break;
-
-                    case UNIT:
-                        screenX = i*squareWidth+20;
-                        screenY = j*squareWidth+20;
-                        g.setColor(Color.BLACK);
-                        g.fillOval(screenX,screenY,squareWidth/2,squareWidth/2);
-                        break;
-
                     case HOME:
-                        screenX = i*squareWidth+20;
-                        screenY = j*squareWidth+20;
+
                         g.setColor(Color.GREEN);
                         g.fillRect(screenX,screenY,squareWidth,squareWidth);
                         break;
 
                     case RESOURCE:
-                        screenX = i*squareWidth+20;
-                        screenY = j*squareWidth+20;
                         g.setColor(Color.RED);
                         g.fillRect(screenX,screenY,squareWidth,squareWidth);
                         break;
                 }
+
+                // Print Units
+                for(int k=0; k<gridContents[i][j].units; k++)
+                {
+                    switch(k)
+                    {
+                        case 0:
+                            break;
+                        case 1:
+                            screenX+=squareWidth/2;
+                            break;
+                        case 2:
+                            screenX-=squareWidth/2;
+                            screenY+=squareWidth/2;
+                            break;
+                        case 3:
+                            screenX+=squareWidth/2;
+                            break;
+                    }
+                    g.setColor(Color.BLACK);
+                    g.fillOval(screenX,screenY,squareWidth/2,squareWidth/2);
+                }
+
+                //Print crumbs
+                screenX = i*squareWidth+20;
+                screenY = j*squareWidth+20+squareWidth;
+
+                g.setColor(Color.BLUE);
+                g.drawString("" + gridContents[i][j].crumbs + "", screenX, screenY);
             }
         }
     }

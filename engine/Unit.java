@@ -42,7 +42,6 @@ public class Unit extends Thing implements Move
     public boolean move(Space[][] gridSpaceValue)
     {
         debug("moving...");
-      
         Point p = getRandomValidMove(gridSpaceValue);
         setPos(p);
         logLocation();
@@ -136,10 +135,22 @@ public class Unit extends Thing implements Move
     private int carry; // the amount of resource the unit is currently carrying
     private ArrayList<Point> history = new ArrayList<Point>();    
 
+    public void resetHistory()
+    {
+        history = new ArrayList<Point>();
+        history.add(getPos());
+    }
     // Method to add the current location to the hisory array
     private void logLocation()
     {
-        history.add(new Point(getPos()));
+        Point newP = new Point(getPos());
+        if(history.size()>0)
+        {
+            Point p = history.get(history.size()-1);
+            int dx = p.getX()-newP.getX();
+            int dy = p.getY()-newP.getY();
+        }
+        history.add(newP);
     }
     /* END PRIVATE */
 }
